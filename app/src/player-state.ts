@@ -3,18 +3,27 @@ import type { soundEffectMap as sound } from './sound-effects';
 
 class playerState {
   constructor(controllerId: number) {
-    this.isReady = false;
+    this._isReady = false;
     this.soundEffects = new Map<ButtonName, keyof typeof sound>();
     this.controllerId = controllerId;
   }
 
   protected controllerId: number;
-  protected isReady: boolean;
+  protected _isReady: boolean;
   protected soundEffects: Map<ButtonName, keyof typeof sound>;
   protected ledState: boolean = false;
 
+  public setIsReady(value: boolean) {
+    this._isReady = value;
+    this.ledState = value;
+  }
+
+  public isReady(): boolean {
+    return this._isReady;
+  }
+
   public hasBuzzed(buzzed: boolean): void {
-    this.isReady = buzzed;
+    this._isReady = buzzed;
     this.ledState = buzzed;
   }
 

@@ -48,10 +48,9 @@ window.addEventListener('resize', resizeCanvas);
 
 const render = (deltaTime: number, buzzState: BuzzerState[]) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   switch (getGameState()) {
     case GAME_STATE_TUTORIAL:
-      tutorialScene.render(deltaTime, buzzState, canvas, ctx);
+      tutorialScene.render(buzzState, canvas, ctx);
       break;
     case GAME_STATE_SOUND_SELECT:
       soundSelectScene.render(deltaTime, buzzState, canvas, ctx);
@@ -71,7 +70,7 @@ const onUpdate = async () => {
 
   switch (getGameState()) {
     case GAME_STATE_TUTORIAL:
-      tutorialScene.update(deltaTime);
+      tutorialScene.update(deltaTime, buzzState);
       break;
     case GAME_STATE_SOUND_SELECT:
       soundSelectScene.update(deltaTime);
@@ -93,7 +92,7 @@ requestAnimationFrame(() => {
   if (!canvas || !ctx) {
     throw new Error('Failed to create canvas and context');
   }
-  setGameState(GAME_STATE_SOUND_SELECT);
+  setGameState(GAME_STATE_TUTORIAL);
   resizeCanvas();
   onUpdate();
 });
