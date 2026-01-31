@@ -63,7 +63,8 @@ export const drawControllerWithEmojis = (
   assignedCount: number,
   maxCount: number,
   buttonEmojis: ButtonEmojis,
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  alpha: number = 1.0,
 ) => {
   // Draw assigned count above controller
   ctx.save();
@@ -75,7 +76,9 @@ export const drawControllerWithEmojis = (
   }
   ctx.restore();
 
+  ctx.globalAlpha = alpha;
   drawController(x, y, controllerState, ctx);
+  ctx.globalAlpha = 1.0;
 
   // Draw emojis above each button
   ctx.save();

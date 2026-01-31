@@ -2,6 +2,9 @@ import cinemaSrc from '../assets/sprites/cinema.png';
 import headSpritesheetSrc from '../assets/sprites/heads-spritesheet2.png'
 import type { BuzzerState } from "../types/buzz";
 import { drawSpeedLines } from "../renderSpeedLines";
+import { controllerImageSrcWidth, drawController, drawControllerWithEmojis, type ButtonEmojis } from '../renderControllers';
+import { getEmojiForSoundEffect } from '../sound-effects';
+import { getPlayerState } from '../player-state';
 
 const cinemaImg = new Image();
 cinemaImg.src = cinemaSrc;
@@ -16,13 +19,13 @@ let headsElapsed = 0;
 let headsTurned = false;
 
 export const update = (deltaTime: number) => {
-  if (!headsTurned) {
-    headsElapsed += deltaTime;
+    if (!headsTurned) {
+        headsElapsed += deltaTime;
 
-    if (headsElapsed >= 0.5) {
-      headsTurned = true;
+        if (headsElapsed >= 0.5) {
+            headsTurned = true;
+        }
     }
-  }
 };
 
 export const render = (
@@ -42,6 +45,26 @@ export const render = (
         canvas.width,
         canvas.height
     );
+
+    buzzState.forEach((state, index) => {
+        const xWobble = Math.sin(Date.now() / 1000 + index) * 10;
+        const yWobble = Math.cos(Date.now() / 1000 + index) * 10;
+        const xPos = xWobble + (90 + index * controllerImageSrcWidth);
+        const yPos = yWobble + 200;
+
+        const remaining = getPlayerState(index).getRemainingSlots();
+        const assigned = 4 - remaining;
+
+        const playerState = getPlayerState(index);
+        const buttonEmojis: ButtonEmojis = {
+            blue: getEmojiForSoundEffect(playerState.getSoundEffect('blue') ?? ''),
+            orange: getEmojiForSoundEffect(playerState.getSoundEffect('orange') ?? ''),
+            green: getEmojiForSoundEffect(playerState.getSoundEffect('green') ?? ''),
+            yellow: getEmojiForSoundEffect(playerState.getSoundEffect('yellow') ?? ''),
+        };
+
+        drawControllerWithEmojis(xPos, yPos, state, assigned, 4, buttonEmojis, ctx, 0.5);
+    });
     // Call this when something gets everyone's attention: 
     // turnHeads(0, 130, canvas, ctx);
 }
