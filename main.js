@@ -1,7 +1,15 @@
+'use strict';
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require("node:path");
 const buzzBuzzers = require('node-buzzers');
-const buzzers = buzzBuzzers(true);
+
+let buzzers;
+try {
+    buzzers = buzzBuzzers(true);
+} catch (error) {
+    console.error('Failed to init buzz', error);
+}
 
 const BUTTON_NAME_MAP = [
     'buzz', 'blue', 'orange', 'green', 'yellow'
@@ -19,7 +27,7 @@ const BUZZ_STATE = [createEmptyBuzzerState(), createEmptyBuzzerState(), createEm
 
 buzzers.setLeds(false, false, false, false);
 buzzers.onError(function (err) {
-    console.log("Error: ", err);
+    console.log("BUZZ ERROR: ", err);
 });
 
 buzzers.onPress(function (ev) {
