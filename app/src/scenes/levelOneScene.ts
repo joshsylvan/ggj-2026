@@ -11,10 +11,14 @@ import { getEmojiForSoundEffect, playSoundEffectByName } from '../sound-effects'
 import { getAllPlayerStates, getPlayerState, resetAllLedStates } from '../player-state';
 import { registerSceneInit, GAME_STATE_GAME, type ButtonName } from '../state';
 
+import caughtSoundSrc from '../../public/sounds/shocked-sound-effect.mp3'
+
 const cinemaImg = new Image();
 cinemaImg.src = cinemaSrc;
 const headsImg = new Image();
 headsImg.src = headSpritesheetSrc;
+
+const caughtAudio = new Audio(caughtSoundSrc);
 
 interface TimelineEvent {
     startTime: number;
@@ -44,20 +48,6 @@ const markPlayerPlayedSound = (playerIndex: number): void => {
     playerSoundCooldowns.set(playerIndex, Date.now());
 };
 
-const handleButtonSounds = (buzzState: BuzzerState[]): void => {
-    const colorButtons: ButtonName[] = ['blue', 'orange', 'green', 'yellow'];
-    buzzState.forEach((state, index) => {
-        const playerState = getPlayerState(index);
-        colorButtons.forEach((button) => {
-            const released = playerState.hasButtonReleased(button, state[button]);
-            if (released && canPlayerPlaySound(index)) {
-                playSoundEffectByName(playerState.getSoundEffect(button) ?? '');
-                markPlayerPlayedSound(index);
-            }
-        });
-    });
-};
-
 let startTime!: number;
 let eventIndex = 0;
 let currentEvents: TimelineEvent[] = [];
@@ -65,27 +55,27 @@ const events: TimelineEvent[] = [
     {
         startTime: 0,
         duration: 500,
-        noiseLevel: 0,
+        noiseLevel: 1,
     },
     {
         startTime: 1000,
         duration: 500,
-        noiseLevel: 0,
+        noiseLevel: 2,
     },
     {
         startTime: 2000,
         duration: 3000,
-        noiseLevel: 0,
+        noiseLevel: 1,
     },
     {
         startTime: 3000,
         duration: 1000,
-        noiseLevel: 0,
+        noiseLevel: 2,
     },
     {
         startTime: 10000,
         duration: 1000,
-        noiseLevel: 0,
+        noiseLevel: 3,
     },
 ];
 
@@ -95,7 +85,7 @@ const hasEventStarted = (event: TimelineEvent): boolean => {
 const hasEventFinished = (event: TimelineEvent): boolean => {
     return Date.now() - startTime >= event.startTime + event.duration;
 };
-const getEventNoiseLevel = (): number => {
+const getCurrentEventNoiseLevel = (): number => {
 
     let noiseLevel = 0;
     currentEvents.forEach((event) => {
@@ -140,27 +130,30 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
 
     buzzState.forEach((state, index) => {
         if (!playerSoundInput[index].isPlaying) {
-            buttons.forEach(buttonName => {
+            for (let i = 0; i < buttons.length; ++i) {
+                const buttonName = buttons[i];
                 if (state[buttonName as keyof BuzzerState]) {
                     playerSoundInput[index].isPlaying = true;
                     playerSoundInput[index].startTime = Date.now();
                     // 
                     const soundName = getPlayerState(index).getSoundEffect(buttonName) as string;
                     if (soundName) {
-                        getPlayerState(index).removeSoundEffect(buttonName);
                         playSoundEffectByName(soundName);
-                        if (getEventNoiseLevel() <= 0) {
+                        if (getCurrentEventNoiseLevel() <= 0) {
                             shouldTurnHeads = true;
                             turnHeadsStartTime = Date.now();
+                            caughtAudio.volume = 0.5;
+                            caughtAudio.play();
                         }
+                        getPlayerState(index).removeSoundEffect(buttonName);
                     }
+                    break;
                 }
-            })
-            // Play the sound for that b
+            }
         }
     });
     playerSoundInput.forEach(soundInput => {
-        if (Date.now() - soundInput.startTime >= 1000) {
+        if (soundInput.isPlaying && Date.now() - soundInput.startTime >= 1500) {
             soundInput.isPlaying = false;
         }
     });
@@ -181,8 +174,6 @@ export const render = (
 ) => {
     ctx.drawImage(cinemaImg, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
 
-    handleButtonSounds(buzzState);
-
     buzzState.forEach((state, index) => {
         const playerState = getPlayerState(index);
 
@@ -192,7 +183,7 @@ export const render = (
         const yPos = yWobble + 200;
 
         const remaining = getPlayerState(index).getRemainingSlots();
-        const assigned = 4 - remaining;
+        // const assigned = 4 - remaining;
         const buttonEmojis: ButtonEmojis = {
             blue: getEmojiForSoundEffect(playerState.getSoundEffect('blue') ?? ''),
             orange: getEmojiForSoundEffect(playerState.getSoundEffect('orange') ?? ''),
@@ -200,13 +191,11 @@ export const render = (
             yellow: getEmojiForSoundEffect(playerState.getSoundEffect('yellow') ?? ''),
         };
 
-        drawControllerWithEmojis(xPos, yPos, state, assigned, 0, buttonEmojis, ctx, 0.5);
+        drawControllerWithEmojis(xPos, yPos, state, 4, 0, buttonEmojis, ctx, 0.5);
     });
     ctx.fillStyle = 'white';
     ctx.font = '24px Minecraft'
-    // ctx.scale(2, 2);
     ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
-    // ctx.scale(1, 1);
     // Call this when something gets everyone's attention:
     if (shouldTurnHeads) {
         turnHeads(0, 130, canvas, ctx);
@@ -214,7 +203,6 @@ export const render = (
             shouldTurnHeads = false;
         }
     }
-    // turnHeads(0, 130, canvas, ctx);
 };
 
 function turnHeads(x: number, y: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
