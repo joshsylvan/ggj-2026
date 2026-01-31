@@ -37,20 +37,22 @@ class playerState {
   public hasReleasedBuzz(buzzed: boolean): boolean {
     const wasPressed = this.previousBuzzState;
     this.previousBuzzState = buzzed;
-    // Only update LED if button is pressed (don't turn off - let scene control that)
     if (buzzed) {
       this.ledState = true;
     }
     return wasPressed && !buzzed;
   }
 
-  /**
-   * Check if a colored button was just pressed (was not pressed, now pressed)
-   */
   public hasButtonPressed(button: ButtonName, isPressed: boolean): boolean {
     const wasPressed = this.previousButtonStates.get(button) ?? false;
     this.previousButtonStates.set(button, isPressed);
     return !wasPressed && isPressed;
+  }
+
+  public hasButtonReleased(button: ButtonName, isPressed: boolean): boolean {
+    const wasPressed = this.previousButtonStates.get(button) ?? false;
+    this.previousButtonStates.set(button, isPressed);
+    return wasPressed && !isPressed;
   }
 
   public setSoundEffect(soundEffect: keyof typeof sound): boolean {
