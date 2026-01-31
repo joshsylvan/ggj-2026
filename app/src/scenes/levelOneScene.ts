@@ -78,6 +78,7 @@ export const update = (deltaTime: number) => {
             break;
         }
     }
+    // Filter out any events no longer happening
     currentEvents = currentEvents.filter((event) => !hasEventFinished(event));
 
     if (!headsTurned) {
