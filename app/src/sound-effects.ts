@@ -5,13 +5,13 @@ export type SoundEffect = {
 };
 
 export const soundEffectMap: Record<string, SoundEffect> = {
-  // 'Air Horn': { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Air Horn' },
-  // 'Hub baseline': { path: 'sounds/hub_baseline.mp3', emoji: '🟧', name: 'Hub baseline' },
-  // 'Notification sound': {
-  //   path: 'sounds/notification_sound.mp3',
-  //   emoji: '🔔',
-  //   name: 'Notification sound',
-  // },
+  'Air Horn': { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Air Horn' },
+  'Hub baseline': { path: 'sounds/hub_baseline.mp3', emoji: '🟧', name: 'Hub baseline' },
+  'Notification sound': {
+    path: 'sounds/notification_sound.mp3',
+    emoji: '🔔',
+    name: 'Notification sound',
+  },
   'Sipping Soda': { path: 'sounds/chug_with_ahhh.mp3', emoji: '🥤', name: 'Sipping Soda' },
   'Violin screech': { path: 'sounds/violin_screech.mp3', emoji: '🎻', name: 'Violin screech' },
   'Wilhelm Scream': { path: 'sounds/wilhelm_scream.mp3', emoji: '😱', name: 'Wilhelm Scream' },

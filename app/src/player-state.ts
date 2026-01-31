@@ -55,6 +55,10 @@ class playerState {
     return wasPressed && !isPressed;
   }
 
+  public removeSoundEffect(button: ButtonName): void {
+    this.soundEffects.delete(button);
+  }
+
   public setSoundEffect(soundEffect: keyof typeof sound): boolean {
     const buttons: ButtonName[] = ['blue', 'orange', 'green', 'yellow'];
     for (const btn of buttons) {

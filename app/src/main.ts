@@ -78,7 +78,7 @@ const onUpdate = async () => {
       soundSelectScene.update(deltaTime);
       break;
     case GAME_STATE_GAME:
-      levelOneScene.update(deltaTime);
+      levelOneScene.update(deltaTime, buzzState);
       break;
   }
 
