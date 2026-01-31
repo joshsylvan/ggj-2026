@@ -1,6 +1,6 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
+import './style.css';
+import typescriptLogo from './typescript.svg';
+import viteLogo from '/vite.svg';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -18,7 +18,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       Click on the Vite and TypeScript logos to learn more
     </p>
   </div>
-`
+`;
 
 window.addEventListener('keydown', (event) => {
   window.buzz.onKeyDown(event.code);
@@ -28,12 +28,9 @@ window.addEventListener('keyup', (event) => {
   window.buzz.onKeyUp(event.code);
 });
 
-
 const onUpdate = async () => {
   console.log(await window.buzz.getState());
   requestAnimationFrame(() => onUpdate());
 };
 
 requestAnimationFrame(() => onUpdate());
-
-

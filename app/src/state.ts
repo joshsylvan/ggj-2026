@@ -64,11 +64,11 @@ class BuzzState {
           events.push(event);
 
           // Fire handlers
-          this.onChangeHandlers.forEach(handler => handler(event));
+          this.onChangeHandlers.forEach((handler) => handler(event));
           if (isPressed) {
-            this.onPressHandlers.forEach(handler => handler(event));
+            this.onPressHandlers.forEach((handler) => handler(event));
           } else {
-            this.onReleaseHandlers.forEach(handler => handler(event));
+            this.onReleaseHandlers.forEach((handler) => handler(event));
           }
         }
       }

@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const HID = require("node-hid");
+const HID = require('node-hid');
 
 // Buzz controller hardware IDs
 const BUZZ_VENDOR_ID = 1356; // Sony
@@ -34,7 +34,7 @@ const BUTTON_MAPPINGS = [
   { bytes: [4, 7], button: 4, controller: 4 },
 ];
 
-const BUTTON_NAME_MAP = ["buzz", "blue", "orange", "green", "yellow"];
+const BUTTON_NAME_MAP = ['buzz', 'blue', 'orange', 'green', 'yellow'];
 
 /**
  * Parse HID data buffer to button states
@@ -75,20 +75,18 @@ class MacBuzzHID {
     try {
       const devices = HID.devices();
       const buzzDevice =
-        devices.find(
-          (d) =>
-            d.vendorId === BUZZ_VENDOR_ID && d.productId === BUZZ_PRODUCT_ID,
-        ) || devices.find((d) => d.product && d.product.match(/Buzz/));
+        devices.find((d) => d.vendorId === BUZZ_VENDOR_ID && d.productId === BUZZ_PRODUCT_ID) ||
+        devices.find((d) => d.product && d.product.match(/Buzz/));
 
       if (!buzzDevice || !buzzDevice.path) {
-        throw new Error("Buzz device not found");
+        throw new Error('Buzz device not found');
       }
 
-      console.log("macOS: Found Buzz device:", buzzDevice.product);
+      console.log('macOS: Found Buzz device:', buzzDevice.product);
       this.device = new HID.HID(buzzDevice.path);
 
       // Handle button data
-      this.device.on("data", (data) => {
+      this.device.on('data', (data) => {
         const buttonStates = parseButtonData(data);
 
         buttonStates.forEach((state, index) => {
@@ -110,14 +108,14 @@ class MacBuzzHID {
         this.previousButtonStates = buttonStates;
       });
 
-      this.device.on("error", (err) => {
+      this.device.on('error', (err) => {
         this.errorListeners.forEach((cb) => cb(err));
       });
 
-      console.log("macOS: Direct HID control initialized successfully");
+      console.log('macOS: Direct HID control initialized successfully');
       return true;
     } catch (err) {
-      console.error("macOS: Failed to init direct HID:", err.message);
+      console.error('macOS: Failed to init direct HID:', err.message);
       return false;
     }
   }
@@ -141,7 +139,7 @@ class MacBuzzHID {
       // Format: [ReportID, padding, LED1, LED2, LED3, LED4, padding, padding]
       this.device.write([0x00, 0x00, ...ledBytes, 0x00, 0x00]);
     } catch (err) {
-      console.error("macOS LED write failed:", err.message);
+      console.error('macOS LED write failed:', err.message);
     }
   }
 

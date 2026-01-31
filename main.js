@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-const { app, ipcMain, BrowserWindow } = require("electron");
-const path = require("node:path");
-const buzzBuzzers = require("node-buzzers");
-const MacBuzzHID = require("./mac-buzz-hid");
+const { app, ipcMain, BrowserWindow } = require('electron');
+const path = require('node:path');
+const buzzBuzzers = require('node-buzzers');
+const MacBuzzHID = require('./mac-buzz-hid');
 
 let buzzers;
 let isBuzzConnected = true;
-const isMac = process.platform === "darwin";
-const BUTTON_NAME_MAP = ["buzz", "blue", "orange", "green", "yellow"];
+const isMac = process.platform === 'darwin';
+const BUTTON_NAME_MAP = ['buzz', 'blue', 'orange', 'green', 'yellow'];
 const createEmptyBuzzerState = () => ({
   buzz: false,
   blue: false,
@@ -34,17 +34,17 @@ if (isMac) {
     buzzers = new MacBuzzHID();
     isBuzzConnected = buzzers.init();
     if (isBuzzConnected) {
-      console.log("Using macOS HID buzz controller");
+      console.log('Using macOS HID buzz controller');
     }
   } catch (error) {
-    console.error("Failed to init buzz, falling back to keyboard controls");
+    console.error('Failed to init buzz, falling back to keyboard controls');
     isBuzzConnected = false;
   }
 } else {
   try {
     buzzers = buzzBuzzers(true);
   } catch (error) {
-    console.error("Failed to init buzz, falling back to keyboard controls");
+    console.error('Failed to init buzz, falling back to keyboard controls');
     isBuzzConnected = false;
   }
 }
@@ -52,7 +52,7 @@ if (isMac) {
 if (isBuzzConnected) {
   buzzers.setLeds(false, false, false, false);
   buzzers.onError(function (err) {
-    console.log("BUZZ ERROR: ", err);
+    console.log('BUZZ ERROR: ', err);
   });
   buzzers.onPress(function (ev) {
     const controllerIndex = ev.controller - 1;
@@ -67,26 +67,26 @@ if (isBuzzConnected) {
 }
 
 const KEY_NAME_MAP = {
-  Digit1: [0, "buzz"],
-  Digit2: [0, "blue"],
-  Digit3: [0, "orange"],
-  Digit4: [0, "green"],
-  Digit5: [0, "yellow"],
-  KeyQ: [1, "buzz"],
-  KeyW: [1, "blue"],
-  KeyE: [1, "orange"],
-  KeyR: [1, "green"],
-  KeyT: [1, "yellow"],
-  KeyA: [2, "buzz"],
-  KeyS: [2, "blue"],
-  KeyD: [2, "orange"],
-  KeyF: [2, "green"],
-  KeyG: [2, "yellow"],
-  KeyZ: [3, "buzz"],
-  KeyX: [3, "blue"],
-  KeyC: [3, "orange"],
-  KeyV: [3, "green"],
-  KeyB: [3, "yellow"],
+  Digit1: [0, 'buzz'],
+  Digit2: [0, 'blue'],
+  Digit3: [0, 'orange'],
+  Digit4: [0, 'green'],
+  Digit5: [0, 'yellow'],
+  KeyQ: [1, 'buzz'],
+  KeyW: [1, 'blue'],
+  KeyE: [1, 'orange'],
+  KeyR: [1, 'green'],
+  KeyT: [1, 'yellow'],
+  KeyA: [2, 'buzz'],
+  KeyS: [2, 'blue'],
+  KeyD: [2, 'orange'],
+  KeyF: [2, 'green'],
+  KeyG: [2, 'yellow'],
+  KeyZ: [3, 'buzz'],
+  KeyX: [3, 'blue'],
+  KeyC: [3, 'orange'],
+  KeyV: [3, 'green'],
+  KeyB: [3, 'yellow'],
 };
 
 const createWindow = () => {
@@ -95,7 +95,7 @@ const createWindow = () => {
     height: 600,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -103,21 +103,21 @@ const createWindow = () => {
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
-    win.loadFile(path.join(__dirname, "app", "dist", "index.html"));
+    win.loadFile(path.join(__dirname, 'app', 'dist', 'index.html'));
   }
 };
 
 app.whenReady().then(() => {
-  ipcMain.handle("setLED", (_, led1, led2, led3, led4) => {
+  ipcMain.handle('setLED', (_, led1, led2, led3, led4) => {
     setLeds(led1, led2, led3, led4);
   });
-  ipcMain.handle("getState", () => BUZZ_STATE);
-  ipcMain.handle("onKeyDown", (_, keyCode) => {
+  ipcMain.handle('getState', () => BUZZ_STATE);
+  ipcMain.handle('onKeyDown', (_, keyCode) => {
     if (!KEY_NAME_MAP[keyCode]) return;
     const [controllerIndex, buttonName] = KEY_NAME_MAP[keyCode];
     BUZZ_STATE[controllerIndex][buttonName] = true;
   });
-  ipcMain.handle("onKeyUp", (_, keyCode) => {
+  ipcMain.handle('onKeyUp', (_, keyCode) => {
     if (!KEY_NAME_MAP[keyCode]) return;
     const [controllerIndex, buttonName] = KEY_NAME_MAP[keyCode];
     BUZZ_STATE[controllerIndex][buttonName] = false;
@@ -125,7 +125,7 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-app.on("before-quit", () => {
+app.on('before-quit', () => {
   if (isBuzzConnected && buzzers) {
     setLeds(false, false, false, false);
 

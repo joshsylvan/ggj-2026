@@ -22,8 +22,8 @@ export interface BuzzAPI {
    * @returns Array of 4 BuzzerState objects, one for each controller
    */
   getState: () => Promise<[BuzzerState, BuzzerState, BuzzerState, BuzzerState]>;
-  onKeyDown: (keycode: string) => Promise<void>,
-  onKeyUp: (keycode: string) => Promise<void>,
+  onKeyDown: (keycode: string) => Promise<void>;
+  onKeyUp: (keycode: string) => Promise<void>;
 }
 
 declare global {
