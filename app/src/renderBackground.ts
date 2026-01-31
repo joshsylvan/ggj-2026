@@ -1,4 +1,4 @@
-export const renderBackground = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, deltaTime: number) => {
+export const renderBackground = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
   const scale = 100;
   const gradient = ctx.createLinearGradient(
     ((Math.sin((Date.now() / 1000)) + 1) / 4) * (canvas.width / scale),
