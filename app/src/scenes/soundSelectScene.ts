@@ -1,4 +1,4 @@
-import { getPlayerState, updateLedState } from '../player-state';
+import { getPlayerState } from '../player-state';
 import { renderBackground } from '../renderBackground';
 import {
   type ButtonEmojis,
@@ -21,6 +21,7 @@ export const update = (deltaTime: number) => {};
 
 let currentRenderedSoundEffect: SoundEffect | undefined = undefined;
 let inputFrozenUntil: number = 0;
+let pendingNextSoundEffect: boolean = false;
 
 const isInputFrozen = (): boolean => {
   return Date.now() < inputFrozenUntil;
@@ -31,6 +32,12 @@ const freezeInput = (durationMs: number): void => {
 };
 
 const renderSoundEffectToSelect = (ctx: CanvasRenderingContext2D) => {
+  // Advance to next sound effect when freeze ends
+  if (pendingNextSoundEffect && !isInputFrozen()) {
+    nextSoundEffect();
+    pendingNextSoundEffect = false;
+  }
+
   const currentSoundEffect = getCurrentSoundEffect();
   drawSoundEffectToSelect(300, 75, currentSoundEffect, ctx);
   if (currentRenderedSoundEffect === currentSoundEffect) return;
@@ -44,7 +51,7 @@ export const render = async (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D
 ) => {
-  renderBackground(canvas, ctx);
+  renderBackground(canvas, ctx, ['#ffaa5e', '#ffecd6']);
 
   renderSoundEffectToSelect(ctx);
 
@@ -53,8 +60,8 @@ export const render = async (
     if (released && currentRenderedSoundEffect && !isInputFrozen()) {
       const assigned = getPlayerState(index).setSoundEffect(currentRenderedSoundEffect.name);
       if (assigned) {
-        nextSoundEffect();
-        freezeInput(2000);
+        pendingNextSoundEffect = true;
+        freezeInput(1000);
       }
     }
 

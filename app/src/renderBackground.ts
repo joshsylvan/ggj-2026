@@ -1,37 +1,36 @@
-export const renderBackground = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+export const renderBackground = (
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  gradientColors: string[] = ['#ee8695', '#fbbbad']
+) => {
   const scale = 100;
   const gradient = ctx.createLinearGradient(
-    ((Math.sin((Date.now() / 1000)) + 1) / 4) * (canvas.width / scale),
+    ((Math.sin(Date.now() / 1000) + 1) / 4) * (canvas.width / scale),
     0,
     canvas.width / scale,
     canvas.height / scale
   );
-  gradient.addColorStop(0, '#ee8695');
-  gradient.addColorStop(1, '#fbbbad');
+  gradientColors.forEach((color, index) => {
+    gradient.addColorStop(index / (gradientColors.length - 1), color);
+  });
   ctx.fillStyle = gradient;
 
   ctx.scale(scale, scale);
   ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
-  floydSteinbergBlocky(
-    ctx, canvas.width, canvas.height, {
+  floydSteinbergBlocky(ctx, canvas.width, canvas.height, {
     step: 20,
     blockSize: 2,
-    maxError: 6
+    maxError: 6,
   });
-  ctx.setTransform(1, 0, 0, 1, 0, 0)
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 };
-
 
 function floydSteinbergBlocky(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  {
-    step = 16,
-    blockSize = 2,
-    maxError = 10
-  } = {}
+  { step = 16, blockSize = 2, maxError = 10 } = {}
 ) {
   const img = ctx.getImageData(0, 0, width, height);
   const data = img.data;
@@ -40,14 +39,13 @@ function floydSteinbergBlocky(
   const clamp = (v: number) => Math.max(0, Math.min(255, v));
 
   for (let y = 0; y < height; y += blockSize) {
-    const leftToRight = ((y / blockSize) % 2 === 0);
+    const leftToRight = (y / blockSize) % 2 === 0;
 
     let xStart = leftToRight ? 0 : width - blockSize;
     let xEnd = leftToRight ? width : -blockSize;
     let xStep = leftToRight ? blockSize : -blockSize;
 
     for (let x = xStart; x !== xEnd; x += xStep) {
-
       // average block color
       let avg = [0, 0, 0];
       let count = 0;
