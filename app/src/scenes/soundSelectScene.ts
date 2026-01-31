@@ -43,6 +43,7 @@ let gameStartCountdownAt: number | null = null;
 const GAME_START_COUNTDOWN_DURATION = 3000; // 3 second countdown before game starts
 const COUNTDOWN_START_DELAY = 2000; // 2 seconds before countdown starts
 const COUNTDOWN_DURATION = 3000; // 3 second countdown
+const FREEZE_DURATION = 1000; // 1 second freeze after claiming a sound
 
 const isInputFrozen = (): boolean => {
   return Date.now() < inputFrozenUntil;
@@ -179,7 +180,7 @@ export const render = async (
         getPlayerState(playerIndex).setLedState(true);
         playerWithLedOn = playerIndex;
         pendingNextSoundEffect = true;
-        freezeInput(1000);
+        freezeInput(FREEZE_DURATION);
       }
     }
   }
@@ -192,7 +193,7 @@ export const render = async (
         getPlayerState(index).setLedState(true);
         playerWithLedOn = index;
         pendingNextSoundEffect = true;
-        freezeInput(1000);
+        freezeInput(FREEZE_DURATION);
       }
     }
 
