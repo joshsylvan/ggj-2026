@@ -11,6 +11,14 @@ cinemaImg.src = cinemaSrc;
 const headsImg = new Image();
 headsImg.src = headSpritesheetSrc;
 
+interface TimelineEvent {
+    startTime: number;
+    duration: number;
+    noiseLevel: number;
+}
+
+
+
 export const firstRowHeight = 139;
 export const secondRowHeight = 133;
 export const headsWidth = 640
@@ -18,10 +26,62 @@ export const headsWidth = 640
 let headsElapsed = 0;
 let headsTurned = false;
 
+let startTime!: number;
+let now: number = 0;
+let eventIndex = 0;
+let currentEvents: TimelineEvent[] = [];
+const events: TimelineEvent[] = [
+    {
+        startTime: 0,
+        duration: 500,
+        noiseLevel: 0,
+    },
+    {
+        startTime: 1000,
+        duration: 500,
+        noiseLevel: 0,
+    },
+    {
+        startTime: 2000,
+        duration: 3000,
+        noiseLevel: 0,
+    }
+];
+
+const hasEventStarted = (event: TimelineEvent): boolean => {
+    return (Date.now() - startTime) >= event.startTime;
+}
+const hasEventFinished = (event: TimelineEvent): boolean => {
+    return (Date.now() - startTime) >= event.startTime + event.duration;
+}
+
+const startEventTimeline = () => {
+    startTime = Date.now();
+    now = 0;
+    eventIndex = 0;
+    currentEvents = [];
+}
+
 export const update = (deltaTime: number) => {
+    // Start the timeline!
+    if (!startTime) {
+        startEventTimeline();
+    }
+    // Check for new events
+    now = Date.now();
+
+    for (let i = eventIndex; eventIndex < events.length; ++i) {
+        if (hasEventStarted(events[eventIndex])) {
+            currentEvents.push(events[eventIndex]);
+            ++eventIndex;
+        } else {
+            break;
+        }
+    }
+    currentEvents = currentEvents.filter((event) => !hasEventFinished(event));
+
     if (!headsTurned) {
         headsElapsed += deltaTime;
-
         if (headsElapsed >= 0.5) {
             headsTurned = true;
         }
