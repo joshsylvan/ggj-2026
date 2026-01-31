@@ -12,6 +12,7 @@ class playerState {
   protected _isReady: boolean;
   protected soundEffects: Map<ButtonName, keyof typeof sound>;
   protected ledState: boolean = false;
+  protected forceLedOff: boolean = false;
   protected previousBuzzState: boolean = false;
   protected previousButtonStates: Map<ButtonName, boolean> = new Map();
 
@@ -36,7 +37,10 @@ class playerState {
   public hasReleasedBuzz(buzzed: boolean): boolean {
     const wasPressed = this.previousBuzzState;
     this.previousBuzzState = buzzed;
-    this.ledState = buzzed;
+    // Only update LED if button is pressed (don't turn off - let scene control that)
+    if (buzzed) {
+      this.ledState = true;
+    }
     return wasPressed && !buzzed;
   }
 
@@ -83,8 +87,26 @@ class playerState {
   }
 
   public getLedState(): boolean {
+    if (this.forceLedOff) return false;
     // LED is on when player is ready (all 4 sounds assigned) or when buzzer is pressed
     return this.isPlayerReady() || this.ledState;
+  }
+
+  setLedState(state: boolean): void {
+    this.ledState = state;
+    this.forceLedOff = false; // Clear force off when explicitly setting state
+  }
+
+  setForceLedOff(force: boolean): void {
+    this.forceLedOff = force;
+  }
+
+  public reset(): void {
+    this._isReady = false;
+    this.soundEffects.clear();
+    this.ledState = false;
+    this.previousBuzzState = false;
+    this.previousButtonStates.clear();
   }
 }
 
@@ -108,4 +130,11 @@ export function updateLedState(): void {
     getPlayerState(2).getLedState(),
     getPlayerState(3).getLedState()
   );
+}
+
+export function resetAllLedStates(): void {
+  for (let i = 0; i < 4; i++) {
+    getPlayerState(i).setForceLedOff(true);
+  }
+  updateLedState();
 }

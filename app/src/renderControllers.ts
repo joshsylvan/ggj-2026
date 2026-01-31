@@ -68,11 +68,11 @@ export const drawControllerWithEmojis = (
 ) => {
   // Draw assigned count above controller
   ctx.save();
-  ctx.font = 'bold 24px Arial';
+  ctx.font = 'bold 18px Minecraft';
   ctx.fillStyle = assignedCount < maxCount ? '#ffffff' : 'red';
   ctx.textAlign = 'center';
   if (assignedCount === maxCount) {
-    ctx.fillText('READY', x + controllerImageSrcWidth / 2, y);
+    ctx.fillText('READY', x + controllerImageSrcWidth / 2, y + 10);
   }
   ctx.restore();
 

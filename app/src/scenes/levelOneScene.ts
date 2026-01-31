@@ -1,10 +1,15 @@
 import cinemaSrc from '../assets/sprites/cinema.png';
-import headSpritesheetSrc from '../assets/sprites/heads-spritesheet2.png'
-import type { BuzzerState } from "../types/buzz";
-import { drawSpeedLines } from "../renderSpeedLines";
-import { controllerImageSrcWidth, drawController, drawControllerWithEmojis, type ButtonEmojis } from '../renderControllers';
+import headSpritesheetSrc from '../assets/sprites/heads-spritesheet2.png';
+import type { BuzzerState } from '../types/buzz';
+import { drawSpeedLines } from '../renderSpeedLines';
+import {
+    controllerImageSrcWidth,
+    drawControllerWithEmojis,
+    type ButtonEmojis,
+} from '../renderControllers';
 import { getEmojiForSoundEffect } from '../sound-effects';
-import { getPlayerState } from '../player-state';
+import { getPlayerState, resetAllLedStates } from '../player-state';
+import { registerSceneInit, GAME_STATE_GAME } from '../state';
 
 const cinemaImg = new Image();
 cinemaImg.src = cinemaSrc;
@@ -21,7 +26,7 @@ interface TimelineEvent {
 
 export const firstRowHeight = 139;
 export const secondRowHeight = 133;
-export const headsWidth = 640
+export const headsWidth = 640;
 
 let headsElapsed = 0;
 let headsTurned = false;
@@ -55,18 +60,21 @@ const hasEventFinished = (event: TimelineEvent): boolean => {
     return (Date.now() - startTime) >= event.startTime + event.duration;
 }
 
-const startEventTimeline = () => {
+
+export const init = () => {
+    headsElapsed = 0;
+    headsTurned = false;
+    resetAllLedStates();
     startTime = Date.now();
     now = 0;
     eventIndex = 0;
     currentEvents = [];
-}
+};
+
+// Register init to be called when scene starts
+registerSceneInit(GAME_STATE_GAME, init);
 
 export const update = (deltaTime: number) => {
-    // Start the timeline!
-    if (!startTime) {
-        startEventTimeline();
-    }
     // Check for new events
     now = Date.now();
 
@@ -95,17 +103,7 @@ export const render = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D
 ) => {
-    ctx.drawImage(
-        cinemaImg,
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    ctx.drawImage(cinemaImg, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
 
     buzzState.forEach((state, index) => {
         const xWobble = Math.sin(Date.now() / 1000 + index) * 10;
@@ -124,31 +122,25 @@ export const render = (
             yellow: getEmojiForSoundEffect(playerState.getSoundEffect('yellow') ?? ''),
         };
 
-        drawControllerWithEmojis(xPos, yPos, state, assigned, 4, buttonEmojis, ctx, 0.5);
+        drawControllerWithEmojis(xPos, yPos, state, assigned, 0, buttonEmojis, ctx, 0.5);
     });
-    // Call this when something gets everyone's attention: 
+    // Call this when something gets everyone's attention:
     // turnHeads(0, 130, canvas, ctx);
-}
+};
 
-
-function turnHeads(
-    x: number,
-    y: number,
-    canvas: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
-) {
+function turnHeads(x: number, y: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = 0.4;
     if (headsTurned) drawSpeedLines(ctx);
     ctx.globalAlpha = 1;
     ctx.drawImage(
-        /* source image */ headsImg,
-        /* top x-coord subrectangle */ 0,
-        /* top y-coord subrectangle */ headsTurned ? 0 : firstRowHeight,
-        /* width of subrectangle */ headsWidth,
-        /* height of subrectangle */ headsTurned ? secondRowHeight : firstRowHeight,
-        /* x axis placement */ Math.floor(x) + (headsTurned ? Math.random() * 10 : 0),
-        /* y axis placement */ Math.floor(y) + (headsTurned ? Math.random() * 10 : 0),
-        /* width of image to draw */ canvas.width,
-        /* height of image to draw */ headsTurned ? secondRowHeight : firstRowHeight,
-    )
+    /* source image */ headsImg,
+    /* top x-coord subrectangle */ 0,
+    /* top y-coord subrectangle */ headsTurned ? 0 : firstRowHeight,
+    /* width of subrectangle */ headsWidth,
+    /* height of subrectangle */ headsTurned ? secondRowHeight : firstRowHeight,
+    /* x axis placement */ Math.floor(x) + (headsTurned ? Math.random() * 10 : 0),
+    /* y axis placement */ Math.floor(y) + (headsTurned ? Math.random() * 10 : 0),
+    /* width of image to draw */ canvas.width,
+    /* height of image to draw */ headsTurned ? secondRowHeight : firstRowHeight,
+    );
 }
