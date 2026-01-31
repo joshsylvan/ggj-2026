@@ -1,6 +1,7 @@
 import cinemaSrc from '../assets/sprites/cinema.png';
-import headSpritesheetSrc from '../assets/sprites/heads-spritesheet.png'
+import headSpritesheetSrc from '../assets/sprites/heads-spritesheet2.png'
 import type { BuzzerState } from "../types/buzz";
+import { drawSpeedLines } from "../renderSpeedLines";
 
 const cinemaImg = new Image();
 cinemaImg.src = cinemaSrc;
@@ -18,7 +19,7 @@ export const update = (deltaTime: number) => {
   if (!headsTurned) {
     headsElapsed += deltaTime;
 
-    if (headsElapsed >= 0.2) {
+    if (headsElapsed >= 0.5) {
       headsTurned = true;
     }
   }
@@ -52,14 +53,17 @@ function turnHeads(
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
 ) {
+    ctx.globalAlpha = 0.4;
+    if (headsTurned) drawSpeedLines(ctx);
+    ctx.globalAlpha = 1;
     ctx.drawImage(
         /* source image */ headsImg,
         /* top x-coord subrectangle */ 0,
         /* top y-coord subrectangle */ headsTurned ? 0 : firstRowHeight,
         /* width of subrectangle */ headsWidth,
         /* height of subrectangle */ headsTurned ? secondRowHeight : firstRowHeight,
-        /* x axis placement */ Math.floor(x),
-        /* y axis placement */ Math.floor(y),
+        /* x axis placement */ Math.floor(x) + (headsTurned ? Math.random() * 10 : 0),
+        /* y axis placement */ Math.floor(y) + (headsTurned ? Math.random() * 10 : 0),
         /* width of image to draw */ canvas.width,
         /* height of image to draw */ headsTurned ? secondRowHeight : firstRowHeight,
     )
