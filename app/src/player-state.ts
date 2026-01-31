@@ -36,7 +36,10 @@ class playerState {
   public hasReleasedBuzz(buzzed: boolean): boolean {
     const wasPressed = this.previousBuzzState;
     this.previousBuzzState = buzzed;
-    this.ledState = buzzed;
+    // Only update LED if button is pressed (don't turn off - let scene control that)
+    if (buzzed) {
+      this.ledState = true;
+    }
     return wasPressed && !buzzed;
   }
 
@@ -85,6 +88,18 @@ class playerState {
   public getLedState(): boolean {
     // LED is on when player is ready (all 4 sounds assigned) or when buzzer is pressed
     return this.isPlayerReady() || this.ledState;
+  }
+
+  setLedState(state: boolean): void {
+    this.ledState = state;
+  }
+
+  public reset(): void {
+    this._isReady = false;
+    this.soundEffects.clear();
+    this.ledState = false;
+    this.previousBuzzState = false;
+    this.previousButtonStates.clear();
   }
 }
 
