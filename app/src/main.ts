@@ -1,10 +1,16 @@
-import './style.css'
+import './style.css';
 
 import type { BuzzerState } from './types/buzz';
 import * as soundSelectScene from './scenes/soundSelectScene';
 import * as tutorialScene from './scenes/tutorialScene';
-import { GAME_STATE_GAME, GAME_STATE_SOUND_SELECT, GAME_STATE_TUTORIAL, getGameState } from './state';
-
+import {
+  GAME_STATE_GAME,
+  GAME_STATE_SOUND_SELECT,
+  GAME_STATE_TUTORIAL,
+  getGameState,
+  setGameState,
+} from './state';
+import { updateLedState } from './player-state';
 
 let canvas!: HTMLCanvasElement;
 let ctx!: CanvasRenderingContext2D;
@@ -36,7 +42,7 @@ const resizeCanvas = () => {
     canvas.style.width = '100%';
     canvas.style.height = 'auto';
   }
-}
+};
 
 window.addEventListener('resize', resizeCanvas);
 
@@ -48,18 +54,11 @@ const render = (deltaTime: number, buzzState: BuzzerState[]) => {
       tutorialScene.render(deltaTime, buzzState, canvas, ctx);
       break;
     case GAME_STATE_SOUND_SELECT:
-      soundSelectScene.render(
-        deltaTime,
-        buzzState,
-        canvas,
-        ctx
-      );
+      soundSelectScene.render(deltaTime, buzzState, canvas, ctx);
       break;
     case GAME_STATE_GAME:
       break;
   }
-
-
 };
 
 const onUpdate = async () => {
@@ -68,7 +67,7 @@ const onUpdate = async () => {
   lastTime = now;
 
   const buzzState = await window.buzz.getState();
-  // console.log(await window.buzz.getState());
+  updateLedState();
 
   switch (getGameState()) {
     case GAME_STATE_TUTORIAL:
@@ -92,8 +91,9 @@ requestAnimationFrame(() => {
   ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   ctx.imageSmoothingEnabled = false;
   if (!canvas || !ctx) {
-    throw new Error("Failed to create canvas and context");
+    throw new Error('Failed to create canvas and context');
   }
+  setGameState(GAME_STATE_SOUND_SELECT);
   resizeCanvas();
-  onUpdate()
+  onUpdate();
 });

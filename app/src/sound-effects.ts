@@ -1,12 +1,18 @@
+import { getPlayerState } from './player-state';
 import type { ButtonEvent } from './state';
 
-const soundEffectMap: Record<string, string> = {
-  'Air Horn': 'sounds/air_horn.mp3',
-  'Hub baseline': 'sounds/hub_baseline.mp3',
-  'Notification sound': 'sounds/notification_sound.mp3',
-  'Sipping Soda': 'sounds/chug_with_ahhh.mp3',
-  'Violin screech': 'sounds/violin_screech.mp3',
-  'Wilhelm Scream': 'sounds/wilhelm_scream.mp3',
+type SoundEffect = {
+  path: string;
+  emoji: string;
+};
+
+export const soundEffectMap: Record<string, SoundEffect> = {
+  'Air Horn': { path: 'sounds/air_horn.mp3', emoji: '📢' },
+  'Hub baseline': { path: 'sounds/hub_baseline.mp3', emoji: '🟧' },
+  'Notification sound': { path: 'sounds/notification_sound.mp3', emoji: '🔔' },
+  'Sipping Soda': { path: 'sounds/chug_with_ahhh.mp3', emoji: '🥤' },
+  'Violin screech': { path: 'sounds/violin_screech.mp3', emoji: '🎻' },
+  'Wilhelm Scream': { path: 'sounds/wilhelm_scream.mp3', emoji: '😱' },
 };
 
 const SoundEffectNames = Object.keys(soundEffectMap).sort(() => Math.random() - 0.5);
@@ -16,43 +22,12 @@ export function getCurrentSoundEffect(): string {
   return SoundEffectNames[currentSoundEffectIndex];
 }
 
-const getBuzzerKey = (buzzer: ButtonEvent): string => {
-  return `${buzzer.controller}-${buzzer.button}`;
-};
-
-const controllerSoundEffectMap: Map<string, keyof typeof soundEffectMap> = new Map();
-
-const mapBuzzerToSoundEffect = (
-  buzzer: ButtonEvent,
-  soundEffect: keyof typeof soundEffectMap
-): void => {
-  controllerSoundEffectMap.set(getBuzzerKey(buzzer), soundEffect);
-  window.console.log(
-    `Mapped buzzer ${buzzer.controller}-${buzzer.button} to sound effect "${soundEffect}"`
-  );
-};
-
 const playSoundEffect = (button: ButtonEvent): void => {
-  const soundPath = soundEffectMap[controllerSoundEffectMap.get(getBuzzerKey(button)) ?? ''];
-  if (soundPath) {
-    const audio = new Audio(soundPath);
+  const soundEffect = getPlayerState(button.controller).getSoundEffect(button.button);
+  if (soundEffect) {
+    const audio = new Audio(soundEffectMap[soundEffect].path);
     audio.play().catch((error) => {
-      console.error(`Failed to play sound effect "${soundPath}":`, error);
+      console.error(`Failed to play sound effect "${soundEffectMap[soundEffect].path}":`, error);
     });
-  } else {
-    console.warn(`Sound effect "${soundPath}" not found.`);
   }
-};
-
-export const setOrPlaySoundEffect = (buzzer: ButtonEvent | undefined): void => {
-  if (!buzzer) {
-    console.warn('No buzzer event provided.');
-    return;
-  }
-  if (controllerSoundEffectMap.has(getBuzzerKey(buzzer))) {
-    playSoundEffect(buzzer);
-    return;
-  }
-  mapBuzzerToSoundEffect(buzzer, getCurrentSoundEffect());
-  currentSoundEffectIndex = (currentSoundEffectIndex + 1) % SoundEffectNames.length;
 };
