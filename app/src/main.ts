@@ -20,9 +20,18 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
+window.addEventListener('keydown', (event) => {
+  window.buzz.onKeyDown(event.code);
+});
+
+window.addEventListener('keyup', (event) => {
+  window.buzz.onKeyUp(event.code);
+});
+
+
 const onUpdate = async () => {
-    console.log(await window.buzz.getState());
-    requestAnimationFrame(() => onUpdate());
+  console.log(await window.buzz.getState());
+  requestAnimationFrame(() => onUpdate());
 };
 
 requestAnimationFrame(() => onUpdate());

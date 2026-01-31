@@ -17,7 +17,9 @@
     "concurrently": "^9.0.0",
     "cross-env": "^7.0.3",
     "electron": "^40.1.0",
-    "wait-on": "^8.0.0"
+    "wait-on": "^8.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4"
   },
   "dependencies": {
     "node-buzzers": "^2.2.0"
