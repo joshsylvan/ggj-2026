@@ -27,6 +27,7 @@ const createEmptyBuzzerState = () => ({
 });
 const BUZZ_STATE = [createEmptyBuzzerState(), createEmptyBuzzerState(), createEmptyBuzzerState(), createEmptyBuzzerState()];
 
+
 if (isBuzzConnected) {
     buzzers.setLeds(false, false, false, false);
     buzzers.onError(function (err) {
@@ -67,7 +68,6 @@ const KEY_NAME_MAP = {
     'KeyB': [3, 'yellow'],
 };
 
-
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
@@ -78,7 +78,12 @@ const createWindow = () => {
         }
     })
 
-    win.loadFile('index.html')
+    // Load the Vite app - use dev server in development, built files in production
+    if (process.env.VITE_DEV_SERVER_URL) {
+        win.loadURL(process.env.VITE_DEV_SERVER_URL);
+    } else {
+        win.loadFile(path.join(__dirname, 'app', 'dist', 'index.html'));
+    }
 }
 
 app.whenReady().then(() => {

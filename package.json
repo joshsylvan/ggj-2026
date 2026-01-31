@@ -4,13 +4,20 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "dev": "concurrently -k \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "cd app && npm run dev",
+    "dev:electron": "wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "build": "cd app && npm run build",
+    "start": "npm run build && electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^40.1.0"
+    "concurrently": "^9.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^40.1.0",
+    "wait-on": "^8.0.0"
   },
   "dependencies": {
     "node-buzzers": "^2.2.0"
