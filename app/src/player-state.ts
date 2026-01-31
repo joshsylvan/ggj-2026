@@ -12,6 +12,8 @@ class playerState {
   protected _isReady: boolean;
   protected soundEffects: Map<ButtonName, keyof typeof sound>;
   protected ledState: boolean = false;
+  protected previousBuzzState: boolean = false;
+  protected previousButtonStates: Map<ButtonName, boolean> = new Map();
 
   public setIsReady(value: boolean) {
     this._isReady = value;
@@ -22,21 +24,67 @@ class playerState {
     return this._isReady;
   }
 
-  public hasBuzzed(buzzed: boolean): void {
+  public hasBuzzed(buzzed: boolean): boolean {
     this._isReady = buzzed;
     this.ledState = buzzed;
+    return buzzed;
   }
 
-  public mapSoundEffect(button: ButtonName, soundEffect: keyof typeof sound): void {
-    this.soundEffects.set(button, soundEffect);
+  /**
+   * Check if the buzz button was just released (was pressed, now released)
+   */
+  public hasReleasedBuzz(buzzed: boolean): boolean {
+    const wasPressed = this.previousBuzzState;
+    this.previousBuzzState = buzzed;
+    this.ledState = buzzed;
+    return wasPressed && !buzzed;
+  }
+
+  /**
+   * Check if a colored button was just pressed (was not pressed, now pressed)
+   */
+  public hasButtonPressed(button: ButtonName, isPressed: boolean): boolean {
+    const wasPressed = this.previousButtonStates.get(button) ?? false;
+    this.previousButtonStates.set(button, isPressed);
+    return !wasPressed && isPressed;
+  }
+
+  public setSoundEffect(soundEffect: keyof typeof sound): boolean {
+    const buttons: ButtonName[] = ['blue', 'orange', 'green', 'yellow'];
+    for (const btn of buttons) {
+      if (!this.soundEffects.has(btn)) {
+        console.log(
+          `Assigning sound effect ${soundEffect} to controller ${this.controllerId} button ${btn}`
+        );
+        this.soundEffects.set(btn, soundEffect);
+        return true;
+      }
+    }
+    return false;
   }
 
   public getSoundEffect(button: ButtonName): keyof typeof sound | undefined {
     return this.soundEffects.get(button);
   }
 
+  /**
+   * Get the number of remaining sound effect slots (out of 4)
+   */
+  public getRemainingSlots(): number {
+    const buttons: ButtonName[] = ['blue', 'orange', 'green', 'yellow'];
+    return buttons.filter((btn) => !this.soundEffects.has(btn)).length;
+  }
+
+  /**
+   * Check if the player is ready (all 4 sound effects assigned)
+   */
+  public isPlayerReady(): boolean {
+    return this.getRemainingSlots() === 0;
+  }
+
   public getLedState(): boolean {
-    return this.ledState;
+    // LED is on when player is ready (all 4 sounds assigned) or when buzzer is pressed
+    return this.isPlayerReady() || this.ledState;
   }
 }
 
