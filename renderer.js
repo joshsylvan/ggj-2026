@@ -15,4 +15,10 @@ const onUpdate = async () => {
     requestAnimationFrame(() => onUpdate());
 };
 
-requestAnimationFrame(() => onUpdate());
+window.addEventListener('keydown', (event) => {
+    window.buzz.onKeyDown(event.code);
+});
+
+window.addEventListener('keyup', (event) => {
+    window.buzz.onKeyUp(event.code);
+});

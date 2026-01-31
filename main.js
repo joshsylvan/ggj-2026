@@ -1,14 +1,16 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, ipcMain, BrowserWindow } = require('electron');
 const path = require("node:path");
 const buzzBuzzers = require('node-buzzers');
 
 let buzzers;
+let isBuzzConnected = true;
 try {
     buzzers = buzzBuzzers(true);
 } catch (error) {
-    console.error('Failed to init buzz', error);
+    console.error('Failed to init buzz, falling back to keyboard controls');
+    isBuzzConnected = false
 }
 
 const BUTTON_NAME_MAP = [
@@ -25,30 +27,46 @@ const createEmptyBuzzerState = () => ({
 });
 const BUZZ_STATE = [createEmptyBuzzerState(), createEmptyBuzzerState(), createEmptyBuzzerState(), createEmptyBuzzerState()];
 
-buzzers.setLeds(false, false, false, false);
-buzzers.onError(function (err) {
-    console.log("BUZZ ERROR: ", err);
-});
+if (isBuzzConnected) {
+    buzzers.setLeds(false, false, false, false);
+    buzzers.onError(function (err) {
+        console.log("BUZZ ERROR: ", err);
+    });
+    buzzers.onPress(function (ev) {
+        const controllerIndex = ev.controller - 1;
+        const buttonName = BUTTON_NAME_MAP[ev.button];
+        BUZZ_STATE[controllerIndex][buttonName] = true;
+    });
+    buzzers.onRelease((ev) => {
+        const controllerIndex = ev.controller - 1;
+        const buttonName = BUTTON_NAME_MAP[ev.button];
+        BUZZ_STATE[controllerIndex][buttonName] = false;
+    });
+}
 
-buzzers.onPress(function (ev) {
-    const controllerIndex = ev.controller - 1;
-    const buttonName = BUTTON_NAME_MAP[ev.button];
+const KEY_NAME_MAP = {
+    'Digit1': [0, 'buzz'],
+    'Digit2': [0, 'blue'],
+    'Digit3': [0, 'orange'],
+    'Digit4': [0, 'green'],
+    'Digit5': [0, 'yellow'],
+    'KeyQ': [1, 'buzz'],
+    'KeyW': [1, 'blue'],
+    'KeyE': [1, 'orange'],
+    'KeyR': [1, 'green'],
+    'KeyT': [1, 'yellow'],
+    'KeyA': [2, 'buzz'],
+    'KeyS': [2, 'blue'],
+    'KeyD': [2, 'orange'],
+    'KeyF': [2, 'green'],
+    'KeyG': [2, 'yellow'],
+    'KeyZ': [3, 'buzz'],
+    'KeyX': [3, 'blue'],
+    'KeyC': [3, 'orange'],
+    'KeyV': [3, 'green'],
+    'KeyB': [3, 'yellow'],
+};
 
-    BUZZ_STATE[controllerIndex][buttonName] = true;
-
-    console.log(
-        `controller ${controllerIndex} pressed ${buttonName}`
-    );
-});
-
-buzzers.onRelease((ev) => {
-    const controllerIndex = ev.controller - 1;
-    const buttonName = BUTTON_NAME_MAP[ev.button];
-    BUZZ_STATE[controllerIndex][buttonName] = false;
-    console.log(
-        `controller ${controllerIndex} released ${buttonName}`
-    );
-});
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -64,44 +82,23 @@ const createWindow = () => {
 }
 
 app.whenReady().then(() => {
-    ipcMain.handle('ping', () => 'pong');
-    ipcMain.handle('setLED', (...args) => buzzers.setLeds(...args))
+    ipcMain.handle('setLED', (...args) => {
+        if (isBuzzConnected) buzzers.setLeds(...args);
+    });
     ipcMain.handle('getState', () => BUZZ_STATE);
-    createWindow()
-})
-
-app.on('before-quit', () => {
-    buzzers.setLeds(false, false, false, false);
+    ipcMain.handle('onKeyDown', (_, keyCode) => {
+        if (!KEY_NAME_MAP[keyCode]) return;
+        const [controllerIndex, buttonName] = KEY_NAME_MAP[keyCode];
+        BUZZ_STATE[controllerIndex][buttonName] = true;
+    });
+    ipcMain.handle('onKeyUp', (_, keyCode) => {
+        if (!KEY_NAME_MAP[keyCode]) return;
+        const [controllerIndex, buttonName] = KEY_NAME_MAP[keyCode];
+        BUZZ_STATE[controllerIndex][buttonName] = false;
+    });
+    createWindow();
 });
 
-
-// import nodeBuzzers from "npm:node-buzzers";
-// import { IBuzzer } from "npm:node-buzzers/types/types";
-
-// const buzzers = nodeBuzzers(true) as IBuzzer;
-
-// // function blinkBuzzerLeds() {
-// //   setInterval(function () {
-// //     console.log("joshua");
-// //     buzzers.setLeds(true, true, true, true);
-// //     setTimeout(function () {
-// //       buzzers.setLeds(false, false, false, false);
-// //     }, 500);
-// //   }, 5000);
-// // }
-
-// // blinkBuzzerLeds();
-
-// buzzers.setLeds(true, false, true, false);
-
-// buzzers.onError(function (err) {
-//   console.log("Error: ", err);
-// });
-
-// console.log("hello");
-
-// buzzers.onPress(function (ev) {
-//   console.log(
-//     `PRESSED: { "Controller": ${ev.controller}, "Button": ${ev.button} }`,
-//   );
-// });
+app.on('before-quit', () => {
+    if (isBuzzConnected) buzzers.setLeds(false, false, false, false);
+});
