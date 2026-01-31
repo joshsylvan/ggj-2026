@@ -3,6 +3,7 @@ import './style.css';
 import type { BuzzerState } from './types/buzz';
 import * as soundSelectScene from './scenes/soundSelectScene';
 import * as tutorialScene from './scenes/tutorialScene';
+import * as levelOneScene from './scenes/levelOneScene';
 import {
   GAME_STATE_GAME,
   GAME_STATE_SOUND_SELECT,
@@ -56,6 +57,7 @@ const render = (deltaTime: number, buzzState: BuzzerState[]) => {
       soundSelectScene.render(deltaTime, buzzState, canvas, ctx);
       break;
     case GAME_STATE_GAME:
+      levelOneScene.render(deltaTime, buzzState, canvas, ctx);
       break;
   }
 };
@@ -76,6 +78,7 @@ const onUpdate = async () => {
       soundSelectScene.update(deltaTime);
       break;
     case GAME_STATE_GAME:
+      levelOneScene.update(deltaTime);
       break;
   }
 
