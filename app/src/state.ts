@@ -96,6 +96,15 @@ class BuzzState {
 // Singleton instance
 export const buzzState = new BuzzState();
 
+export const GAME_STATE_TUTORIAL = 0;
+export const GAME_STATE_SOUND_SELECT = 1;
+export const GAME_STATE_GAME = 2;
+let gameState = GAME_STATE_TUTORIAL;
+export const getGameState = () => gameState;
+export const setGameState = (state: number) => gameState = state;
+
+
+
 /**
  * Poll the buzz controller and update state
  * Call this once per frame in your game loop
