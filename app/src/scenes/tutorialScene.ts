@@ -5,31 +5,28 @@ import type { BuzzerState } from "../types/buzz";
 
 let numberOfReadyPlayers = 0;
 
-
-const readySoundPath = 'sounds/synth-stab.mp3';
-const readySound = new Audio(readySoundPath);
+const readySounds = [
+    new Audio('sounds/synth-stab.mp3'),
+    new Audio('sounds/synth-stab-2.mp3'),
+    new Audio('sounds/synth-stab-3.mp3'),
+    new Audio('sounds/clown-horn.mp3'),
+];
 
 export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
+    if (numberOfReadyPlayers < 4) {
+        buzzState.forEach((state, index) => {
+            const player = getPlayerState(index);
+            if (!player.isReady() && state.buzz) {
+                player.setIsReady(true);
+                console.log('read', numberOfReadyPlayers);
+                readySounds[numberOfReadyPlayers].play();
+                ++numberOfReadyPlayers
+            }
+        });
+    }
 
-    numberOfReadyPlayers = 0;
-
-    buzzState.forEach((state, index) => {
-        const player = getPlayerState(index);
-        if (!player.isReady() && state.buzz) {
-            getPlayerState(index).setIsReady(true);
-            readySound.play();
-        }
-    });
-
-    let isEveryoneReady = true;
-    getAllPlayerStates().forEach((playerState) => {
-        if (playerState.isReady()) {
-            ++numberOfReadyPlayers;
-        }
-        isEveryoneReady = isEveryoneReady && playerState.isReady();
-    });
-
-    if (isEveryoneReady) {
+    if (numberOfReadyPlayers === 4) {
+        numberOfReadyPlayers = 0;
         buzzState.forEach((_state, index) => {
             const player = getPlayerState(index);
             getPlayerState(index).setIsReady(false);
