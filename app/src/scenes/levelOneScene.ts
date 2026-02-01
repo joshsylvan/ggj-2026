@@ -56,7 +56,7 @@ let currentEvents: TimelineEvent[] = [];
 const events: TimelineEvent[] = [
     {
         startTime: 500, // Movie intro sound
-        duration: 100,
+        duration: 500,
         noiseLevel: 1,
     },
     {
@@ -96,7 +96,7 @@ const events: TimelineEvent[] = [
     },
     {
         startTime: 60000 + 46000, // Outro
-        duration: 500,
+        duration: 10000,
         noiseLevel: 3,
     }
 ];
@@ -121,11 +121,13 @@ export const init = () => {
     // headsElapsed = 0;
     // headsTurned = false;
     resetAllLedStates();
-    startTime = Date.now();
-    movieEndTime = startTime + getMovieDuration();
-    eventIndex = 0;
-    currentEvents = [];
-    playMovie();
+
+    playMovie(() => {
+        startTime = Date.now() + 1000; // Here because hacky
+        movieEndTime = startTime + getMovieDuration();
+        eventIndex = 0;
+        currentEvents = [];
+    });
 };
 
 // Register init to be called when scene starts
@@ -140,6 +142,7 @@ const playerSoundInput: PlayerSoundState[] = [createEmptySoundState(), createEmp
 
 
 export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
+    if (startTime === 0) return;
     // Check for new events
     for (let i = eventIndex; eventIndex < events.length; ++i) {
         if (hasEventStarted(events[eventIndex])) {
@@ -187,7 +190,7 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
         }
     });
     // Check if the movie has finished with a 1 second buffer
-    if (Date.now() >= movieEndTime + 1000) {
+    if (Boolean(startTime) && Date.now() >= movieEndTime + 1000) {
         setGameState(GAME_STATE_RESULTS);
     }
 };
