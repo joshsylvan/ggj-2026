@@ -94,6 +94,8 @@ const createWindow = () => {
     width: 1280,
     height: 720,
     autoHideMenuBar: true,
+    title: 'i cannot hide my shame',
+    icon: path.join(__dirname, 'favicon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

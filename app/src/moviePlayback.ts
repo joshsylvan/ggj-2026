@@ -1,9 +1,9 @@
-
+import movieSrc from '/uh2.mp4';
 let movie!: HTMLVideoElement
 
 export const setupMovie = () => {
     movie = document.getElementById("video") as HTMLVideoElement;
-    movie.src = '/uh2.mp4'
+    movie.src = movieSrc;
 }
 
 export const playMovie = (onStart: () => void) => {

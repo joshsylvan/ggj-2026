@@ -241,9 +241,9 @@ export const render = (
     const xPos = xWobble + (90 + index * controllerImageSrcWidth);
     const yPos = yWobble + 200;
 
-    ctx.fillStyle = 'white';
-    ctx.font = '24px Minecraft';
-    ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
+    // ctx.fillStyle = 'white';
+    // ctx.font = '24px Minecraft';
+    // ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
     // Call this when something gets everyone's attention:
     if (turnHeadsStartTime) {
       fullTurn(canvas, ctx);
