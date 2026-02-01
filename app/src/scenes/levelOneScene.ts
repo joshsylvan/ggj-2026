@@ -55,30 +55,50 @@ let eventIndex = 0;
 let currentEvents: TimelineEvent[] = [];
 const events: TimelineEvent[] = [
     {
-        startTime: 0,
-        duration: 500,
+        startTime: 500, // Movie intro sound
+        duration: 100,
         noiseLevel: 1,
     },
     {
-        startTime: 1000,
-        duration: 500,
+        startTime: 25000, // Shaver
+        duration: 2000,
         noiseLevel: 2,
     },
     {
-        startTime: 2000,
-        duration: 3000,
-        noiseLevel: 1,
+        startTime: 40000, // Interval sounds
+        duration: 16000,
+        noiseLevel: 3,
     },
     {
-        startTime: 3000,
-        duration: 1000,
+        startTime: 66000, // Western 1
+        duration: 4000,
         noiseLevel: 2,
     },
     {
-        startTime: 10000,
+        startTime: 60000 + 11000, // Western 2
         duration: 1000,
         noiseLevel: 3,
     },
+    {
+        startTime: 60000 + 11000, // Western 2
+        duration: 1000,
+        noiseLevel: 3,
+    },
+    {
+        startTime: 60000 + 11100, // Phone
+        duration: 3000,
+        noiseLevel: 3,
+    },
+    {
+        startTime: 60000 + 17000, // GUN
+        duration: 500,
+        noiseLevel: 3,
+    },
+    {
+        startTime: 60000 + 46000, // Outro
+        duration: 500,
+        noiseLevel: 3,
+    }
 ];
 
 const hasEventStarted = (event: TimelineEvent): boolean => {
