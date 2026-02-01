@@ -1,8 +1,7 @@
-import { getAllPlayerStates, getPlayerState } from '../player-state';
+import { getAllPlayerStates, getPlayerState, updateLedState } from '../player-state';
 import { renderBackground } from '../renderBackground';
 import {
   controllerImageSrcWidth,
-  drawController,
   drawControllerWithEmojis,
   type ButtonEmojis,
 } from '../renderControllers';
@@ -16,6 +15,46 @@ crownSprite.src = '/crown.png';
 let winnerPlayerIndex = 0;
 let winnerPlayerScore = 0;
 let numberOfReadyPlayers = 0;
+let lightSequenceIndex = 0;
+let lastLightChangeTime = 0;
+const LIGHT_SEQUENCE_INTERVAL = 150; // ms between light changes
+
+const lightSequencePatterns = [
+  [true, false, false, false],
+  [false, true, false, false],
+  [false, false, true, false],
+  [false, false, false, true],
+  [false, false, true, false],
+  [false, true, false, false],
+  [true, false, false, false],
+  [true, true, false, false],
+  [false, true, true, false],
+  [false, false, true, true],
+  [false, false, true, true],
+  [false, true, true, false],
+  [true, true, false, false],
+  [true, true, true, true],
+  [false, false, false, false],
+  [true, true, true, true],
+  [false, false, false, false],
+  [true, true, true, true],
+];
+
+const updateLightSequence = () => {
+  const now = Date.now();
+  if (now - lastLightChangeTime >= LIGHT_SEQUENCE_INTERVAL) {
+    lastLightChangeTime = now;
+    lightSequenceIndex = (lightSequenceIndex + 1) % lightSequencePatterns.length;
+
+    const pattern = lightSequencePatterns[lightSequenceIndex];
+    for (let i = 0; i < 4; i++) {
+      const player = getPlayerState(i);
+      player.setForceLedOff(false);
+      player.setLedState(pattern[i]);
+    }
+    updateLedState();
+  }
+};
 
 export const init = () => {
   console.log('init');
@@ -29,13 +68,21 @@ export const init = () => {
       return maxIndex;
     }
   }, 0);
+
   winnerPlayerScore = playerStates.get(winnerPlayerIndex)?.getScore(true) ?? 0;
+
+  // Reset light sequence
+  lightSequenceIndex = 0;
+  lastLightChangeTime = Date.now();
 };
 
 // Register init to be called when scene starts
 registerSceneInit(GAME_STATE_RESULTS, init);
 
 export const update = (deltaTime: number, buzzState: BuzzerState[]): void => {
+  // Update light sequence animation
+  updateLightSequence();
+
   if (numberOfReadyPlayers < 4) {
     buzzState.forEach((state, index) => {
       const player = getPlayerState(index);
