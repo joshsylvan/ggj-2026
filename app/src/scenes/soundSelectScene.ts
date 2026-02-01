@@ -41,9 +41,9 @@ let soundEffectDisplayedAt: number = 0;
 let playerWithLedOn: number | null = null;
 let gameStartCountdownAt: number | null = null;
 const GAME_START_COUNTDOWN_DURATION = 3000; // 3 second countdown before game starts
-const COUNTDOWN_START_DELAY = 20; // 2 seconds before countdown starts
-const COUNTDOWN_DURATION = 30; // 3 second countdown
-const FREEZE_DURATION = 10; // 1 second freeze after claiming a sound
+const COUNTDOWN_START_DELAY = 2000; // 2 seconds before countdown starts
+const COUNTDOWN_DURATION = 3000; // 3 second countdown
+const FREEZE_DURATION = 1000; // 1 second freeze after claiming a sound
 
 const isInputFrozen = (): boolean => {
   return Date.now() < inputFrozenUntil;

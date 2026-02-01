@@ -85,6 +85,14 @@ export const playSoundEffectByName = (name: string): void => {
   }
 };
 
+export const getSoundEffectDuration = (name: string): number => {
+  const sound = soundEffectMap[name];
+  if (sound) {
+    return (sound.audio?.duration ?? 0) * 1000;
+  }
+  return 0
+};
+
 /**
  * Get the emoji for a sound effect by its name
  */

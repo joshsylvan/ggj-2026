@@ -7,7 +7,7 @@ import {
     drawControllerWithEmojis,
     type ButtonEmojis,
 } from '../renderControllers';
-import { getEmojiForSoundEffect, playSoundEffectByName } from '../sound-effects';
+import { getEmojiForSoundEffect, getSoundEffectDuration, playSoundEffectByName } from '../sound-effects';
 import { getAllPlayerStates, getPlayerState, resetAllLedStates } from '../player-state';
 import { registerSceneInit, GAME_STATE_GAME, type ButtonName } from '../state';
 
@@ -37,6 +37,7 @@ const playerSoundCooldowns: Map<number, number> = new Map();
 const SOUND_COOLDOWN_MS = 500; // Half second cooldown between sounds
 
 let turnHeadsStartTime = 0;
+let turnHeadsEndTime = 0;
 
 const canPlayerPlaySound = (playerIndex: number): boolean => {
     const lastPlayed = playerSoundCooldowns.get(playerIndex) ?? 0;
@@ -138,7 +139,14 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
                         playerSoundInput[index].startTime = Date.now();
                         playSoundEffectByName(soundName);
                         if (getCurrentEventNoiseLevel() <= 0) {
-                            turnHeadsStartTime = Date.now();
+                            // Only change the start time if nothing is playing
+                            if (turnHeadsStartTime === 0) {
+                                turnHeadsStartTime = Date.now();
+                            }
+                            // Make sure the sound effect as a minimum duration of one second
+                            const nextEndTIme = Date.now() + Math.max(getSoundEffectDuration(soundName), 1000);
+                            // Only  update the end time if the new sound effect finishes after the current
+                            if (nextEndTIme > turnHeadsEndTime) { turnHeadsEndTime = nextEndTIme; }
                             caughtAudio.volume = 0.5;
                             caughtAudio.play();
                         }
@@ -154,13 +162,6 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
             soundInput.isPlaying = false;
         }
     });
-
-    // if (!headsTurned) {
-    //     headsElapsed += deltaTime;
-    //     if (headsElapsed >= 0.5) {
-    //         headsTurned = true;
-    //     }
-    // }
 };
 
 export const render = (
@@ -194,8 +195,9 @@ export const render = (
     // Call this when something gets everyone's attention:
     if (turnHeadsStartTime) {
         turnHeads(canvas, ctx);
-        if (Date.now() - turnHeadsStartTime >= 1000) {
+        if (Date.now() >= turnHeadsEndTime) {
             turnHeadsStartTime = 0;
+            turnHeadsEndTime = 0;
         }
     }
 };
