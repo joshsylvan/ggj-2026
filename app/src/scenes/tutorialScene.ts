@@ -1,19 +1,13 @@
 import { getAllPlayerStates, getPlayerState } from "../player-state";
 import { renderBackground } from "../renderBackground";
 import { controllerImageSrcWidth, drawController } from "../renderControllers";
+import { readySounds } from "../sound-effects";
 import { GAME_STATE_GAME, GAME_STATE_SOUND_SELECT, setGameState } from "../state";
 import type { BuzzerState } from "../types/buzz";
 
 let numberOfReadyPlayers = 0;
 const COOLDOWN_TIME_MS = 4000;
 const COOLDOWN_TIME_SECONDS = 4;
-
-const readySounds = [
-    new Audio('sounds/synth-stab.mp3'),
-    new Audio('sounds/synth-stab-2.mp3'),
-    new Audio('sounds/synth-stab-3.mp3'),
-    new Audio('sounds/clown-horn.mp3'),
-];
 
 let readyTime: undefined | number;
 

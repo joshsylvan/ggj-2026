@@ -6,6 +6,12 @@ export type SoundEffect = {
   audio?: HTMLAudioElement;
 };
 
+export const readySounds = [
+  new Audio('sounds/synth-stab.mp3'),
+  new Audio('sounds/synth-stab-2.mp3'),
+  new Audio('sounds/synth-stab-3.mp3'),
+  new Audio('sounds/clown-horn.mp3'),
+];
 
 const SOUNDS: SoundEffect[] = [
   { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Discrete Horn', noise: 3 },
@@ -23,7 +29,7 @@ const SOUNDS: SoundEffect[] = [
   { path: 'sounds/windows.mp3', emoji: '💻', name: 'Computer Sounds', noise: 1 },
   { path: 'sounds/fartmemereloaded.mp3', emoji: '🧑‍⚕️', name: 'Healthy Gut', noise: 2 },
   { path: 'sounds/some-all-star.mp3', emoji: '🤢', name: 'Some', noise: 2 },
-  { path: 'sounds/sea-shanty-2.mp3', emoji: '🏴‍☠️', name: 'Pirate Music', noise: 2 },
+  { path: 'sounds/sea-shanty-2.mp3', emoji: '🏴‍☠️', name: 'Lil\' ditty', noise: 2 },
   { path: 'sounds/shut-up-mom.mp3', emoji: '🤫', name: 'Silence Mother', noise: 3 },
   { path: 'sounds/not-the-bees.mp3', emoji: '🐝', name: 'Bees', noise: 2 },
   { path: 'sounds/tearingmeapart.mp3', emoji: '💃', name: 'Oh Lisa', noise: 2 },
@@ -31,6 +37,7 @@ const SOUNDS: SoundEffect[] = [
   { path: 'sounds/drinking-schlurping.mp3', emoji: '🥤', name: 'I need more soda', noise: 1 },
   { path: 'sounds/nookie.mp3', emoji: '🍪', name: 'Solid Biscuit', noise: 3 },
   { path: 'sounds/zoidberg.mp3', emoji: '🦞', name: 'Lobster', noise: 2 },
+  { path: 'sounds/FART.mp3', emoji: '🍃', name: 'Breezy day', noise: 2 },
 ];
 
 export const soundEffectMap: Record<string, SoundEffect> = SOUNDS.reduce<Record<string, SoundEffect>>((pre, cur) => {

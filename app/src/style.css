@@ -31,6 +31,16 @@ canvas {
   image-rendering: pixelated;
 }
 
+video {
+  background-color: blue;
+  width: 640px;
+  height: 360px;
+  position: absolute;
+  aspect-ratio: calc(16 / 9);
+  z-index: -1;
+  transform: translate(2%, -19%);
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

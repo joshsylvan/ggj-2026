@@ -9,9 +9,10 @@ import {
 } from '../renderControllers';
 import { getEmojiForSoundEffect, getSoundEffectDuration, playSoundEffectByName } from '../sound-effects';
 import { getAllPlayerStates, getPlayerState, resetAllLedStates } from '../player-state';
-import { registerSceneInit, GAME_STATE_GAME, type ButtonName } from '../state';
+import { registerSceneInit, GAME_STATE_GAME, type ButtonName, setGameState, GAME_STATE_RESULTS } from '../state';
 
-import caughtSoundSrc from '../../public/sounds/shocked-sound-effect.mp3'
+import caughtSoundSrc from '/sounds/shocked-sound-effect.mp3'
+import { getMovieDuration, playMovie } from '../moviePlayback';
 
 const cinemaImg = new Image();
 cinemaImg.src = cinemaSrc;
@@ -48,7 +49,8 @@ const markPlayerPlayedSound = (playerIndex: number): void => {
     playerSoundCooldowns.set(playerIndex, Date.now());
 };
 
-let startTime!: number;
+let startTime: number = 0;
+let movieEndTime: number = 0;
 let eventIndex = 0;
 let currentEvents: TimelineEvent[] = [];
 const events: TimelineEvent[] = [
@@ -100,8 +102,10 @@ export const init = () => {
     // headsTurned = false;
     resetAllLedStates();
     startTime = Date.now();
+    movieEndTime = startTime + getMovieDuration();
     eventIndex = 0;
     currentEvents = [];
+    playMovie();
 };
 
 // Register init to be called when scene starts
@@ -162,6 +166,10 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
             soundInput.isPlaying = false;
         }
     });
+    // Check if the movie has finished with a 1 second buffer
+    if (Date.now() >= movieEndTime + 1000) {
+        setGameState(GAME_STATE_RESULTS);
+    }
 };
 
 export const render = (
@@ -189,9 +197,9 @@ export const render = (
         // Hardcoded 4 to remove the ready text
         drawControllerWithEmojis(xPos, yPos, state, 4, 0, buttonEmojis, ctx, 0.5);
     });
-    ctx.fillStyle = 'white';
-    ctx.font = '24px Minecraft'
-    ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
+    // ctx.fillStyle = 'white';
+    // ctx.font = '24px Minecraft'
+    // ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
     // Call this when something gets everyone's attention:
     if (turnHeadsStartTime) {
         turnHeads(canvas, ctx);

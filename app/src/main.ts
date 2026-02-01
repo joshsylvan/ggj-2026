@@ -4,20 +4,24 @@ import type { BuzzerState } from './types/buzz';
 import * as soundSelectScene from './scenes/soundSelectScene';
 import * as tutorialScene from './scenes/tutorialScene';
 import * as levelOneScene from './scenes/levelOneScene';
+import * as resultsScene from './scenes/resultsScene';
 import {
   GAME_STATE_GAME,
+  GAME_STATE_RESULTS,
   GAME_STATE_SOUND_SELECT,
   GAME_STATE_TUTORIAL,
   getGameState,
   setGameState,
 } from './state';
 import { updateLedState } from './player-state';
+import { setupMovie } from './moviePlayback';
 
 let canvas!: HTMLCanvasElement;
 let ctx!: CanvasRenderingContext2D;
 const container = document.querySelector<HTMLDivElement>('#app') as HTMLDivElement;
 container!.innerHTML = `
     <canvas id="canvas" width="640" height="360"></canvas>
+    <video id="video"></video>
 `;
 
 let lastTime = Date.now();
@@ -31,17 +35,23 @@ window.addEventListener('keyup', (event) => {
 });
 
 const resizeCanvas = () => {
+
   const containerRatio = container.clientWidth / container.clientHeight;
   const canvasRatio = canvas.width / canvas.height;
 
+  const video = document.getElementById("video") as HTMLVideoElement;
   if (containerRatio > canvasRatio) {
     // Container is wider - fit to height
     canvas.style.width = 'auto';
     canvas.style.height = '100%';
+    video.style.width = 'auto';
+    video.style.height = '50%';
   } else {
     // Container is taller - fit to width
     canvas.style.width = '100%';
     canvas.style.height = 'auto';
+    video.style.width = '50%';
+    video.style.height = 'auto';
   }
 };
 
@@ -58,6 +68,9 @@ const render = (deltaTime: number, buzzState: BuzzerState[]) => {
       break;
     case GAME_STATE_GAME:
       levelOneScene.render(deltaTime, buzzState, canvas, ctx);
+      break;
+    case GAME_STATE_RESULTS:
+      resultsScene.render(deltaTime, buzzState, canvas, ctx);
       break;
   }
 };
@@ -80,6 +93,9 @@ const onUpdate = async () => {
     case GAME_STATE_GAME:
       levelOneScene.update(deltaTime, buzzState);
       break;
+    case GAME_STATE_RESULTS:
+      resultsScene.update(deltaTime, buzzState);
+      break;
   }
 
   render(deltaTime, buzzState);
@@ -95,6 +111,8 @@ requestAnimationFrame(() => {
   if (!canvas || !ctx) {
     throw new Error('Failed to create canvas and context');
   }
+
+  setupMovie();
   setGameState(GAME_STATE_TUTORIAL);
   resizeCanvas();
   onUpdate();
