@@ -233,6 +233,15 @@ export const render = (
 ) => {
   ctx.drawImage(cinemaImg, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
 
+  // Draw fullTurn behind controllers
+  if (turnHeadsStartTime) {
+    fullTurn(canvas, ctx);
+    if (Date.now() >= turnHeadsEndTime) {
+      turnHeadsStartTime = 0;
+      turnHeadsEndTime = 0;
+    }
+  }
+
   buzzState.forEach((state, index) => {
     const playerState = getPlayerState(index);
 
@@ -241,17 +250,9 @@ export const render = (
     const xPos = xWobble + (90 + index * controllerImageSrcWidth);
     const yPos = yWobble + 200;
 
-    ctx.fillStyle = 'white';
-    ctx.font = '24px Minecraft';
-    ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
-    // Call this when something gets everyone's attention:
-    if (turnHeadsStartTime) {
-      fullTurn(canvas, ctx);
-      if (Date.now() >= turnHeadsEndTime) {
-        turnHeadsStartTime = 0;
-        turnHeadsEndTime = 0;
-      }
-    }
+    // ctx.fillStyle = 'white';
+    // ctx.font = '24px Minecraft';
+    // ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
 
     const buttonEmojis: ButtonEmojis = {
       blue: getEmojiForSoundEffect(playerState.getSoundEffect('blue') ?? ''),

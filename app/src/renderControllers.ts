@@ -88,7 +88,6 @@ export const drawControllerWithEmojis = (
   if (displayScore) {
     ctx.font = 'bold 24px Minecraft';
     ctx.fillStyle = isEnded ? '#340000' : '#f9ae00';
-    console.log('Drawing score:', score);
     ctx.fillText(`${score}`, x + controllerImageSrcWidth / 2, y + 40);
   }
 
