@@ -66,7 +66,8 @@ export const drawControllerWithEmojis = (
   ctx: CanvasRenderingContext2D,
   alpha: number = 1.0,
   score: number = 0,
-  displayScore: boolean = false
+  displayScore: boolean = false,
+  isEnded: boolean = false
 ) => {
   // Draw assigned count above controller
   ctx.save();
@@ -78,17 +79,18 @@ export const drawControllerWithEmojis = (
     ctx.fillText('READY', x + controllerImageSrcWidth / 2, y + 10);
   }
 
-  if (displayScore) {
-    ctx.font = 'bold 24px Minecraft';
-    ctx.fillStyle = '#ffae00';
-    ctx.fillText(`${score}`, x + controllerImageSrcWidth / 2, y + 40);
-  }
-
   ctx.restore();
 
   ctx.globalAlpha = alpha;
   drawController(x, y, controllerState, ctx);
   ctx.globalAlpha = 1.0;
+
+  if (displayScore) {
+    ctx.font = 'bold 24px Minecraft';
+    ctx.fillStyle = isEnded ? '#dbdbdb' : '#f9ae00';
+    console.log('Drawing score:', score);
+    ctx.fillText(`${score}`, x + controllerImageSrcWidth / 2, y + 40);
+  }
 
   // Draw emojis above each button
   ctx.save();

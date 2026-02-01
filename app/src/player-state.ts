@@ -108,8 +108,9 @@ class playerState {
     this.forceLedOff = force;
   }
 
-  getScore(): number {
-    return this.score;
+  getScore(hasEnded: boolean = false): number {
+    if (!hasEnded) return this.score;
+    return this.score + this.soundEffects.size * -10;
   }
 
   addSoundEffectToScore(soundEffect: keyof typeof sound, caughtMultiplier: number = 1): void {
