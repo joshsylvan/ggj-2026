@@ -61,6 +61,13 @@ export function getPreviousSoundEffect(): SoundEffect | undefined {
   return soundEffectMap[SoundEffectNames[previousIndex]];
 }
 
+export const stopSoundEffect = (soundName: string): void => {
+  const audio = soundEffectMap[soundName].audio;
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+}
 export const playSoundEffect = (sound: SoundEffect): void => {
   // Precache the sounds
   if (soundEffectMap[sound.name].audio) {

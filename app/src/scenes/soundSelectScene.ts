@@ -12,12 +12,15 @@ import {
   nextSoundEffect,
   playSoundEffect,
   playSoundEffectByName,
+  stopSoundEffect,
   type SoundEffect,
 } from '../sound-effects';
 import type { BuzzerState } from '../types/buzz';
 import { type ButtonName, setGameState, GAME_STATE_GAME } from '../state';
 
-export const update = (deltaTime: number) => {};
+const assignSound = new Audio('sounds/synth-stab.mp3');
+
+export const update = (deltaTime: number) => { };
 
 export const init = (numControllers: number = 4) => {
   // Reset scene state
@@ -190,6 +193,8 @@ export const render = async (
     if (released && currentRenderedSoundEffect && !isInputFrozen()) {
       const assigned = getPlayerState(index).setSoundEffect(currentRenderedSoundEffect.name);
       if (assigned) {
+        stopSoundEffect(currentRenderedSoundEffect.name);
+        assignSound.play();
         getPlayerState(index).setLedState(true);
         playerWithLedOn = index;
         pendingNextSoundEffect = true;
