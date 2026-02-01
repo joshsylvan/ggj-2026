@@ -12,7 +12,7 @@ import {
   getSoundEffectDuration,
   playSoundEffectByName,
 } from '../sound-effects';
-import { getAllPlayerStates, getPlayerState, resetAllLedStates } from '../player-state';
+import { getPlayerState, resetAllLedStates } from '../player-state';
 import {
   registerSceneInit,
   GAME_STATE_GAME,
@@ -231,7 +231,18 @@ export const render = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D
 ) => {
+  // Add subtle pulsing glow effect
+  const pulseIntensity = (Math.sin(Date.now() / 500) + 1) / 2;
+  const glowBlur = 10 + pulseIntensity * 10;
+  const glowAlpha = 0.3 + pulseIntensity * 0.3;
+
+  ctx.save();
+  ctx.shadowColor = `rgba(255, 225, 225, ${glowAlpha})`;
+  ctx.shadowBlur = glowBlur;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
   ctx.drawImage(cinemaImg, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+  ctx.restore();
 
   // Draw fullTurn behind controllers
   if (turnHeadsStartTime) {
