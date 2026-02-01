@@ -8,9 +8,10 @@ import {
 import { getEmojiForSoundEffect, readySounds } from '../sound-effects';
 import { GAME_STATE_RESULTS, registerSceneInit } from '../state';
 import type { BuzzerState } from '../types/buzz';
+import crownSpriteSrc from '../assets/sprites/crown.png'
 
 const crownSprite = new Image();
-crownSprite.src = '/crown.png';
+crownSprite.src = crownSpriteSrc;
 
 let winnerPlayerIndex = 0;
 let winnerPlayerScore = 0;
