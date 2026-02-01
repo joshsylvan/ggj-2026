@@ -58,10 +58,7 @@ const updateLightSequence = () => {
 };
 
 export const init = () => {
-  console.log('init');
-
   const playerStates = getAllPlayerStates();
-
   winnerPlayerIndex = Array.from(playerStates.entries()).reduce((maxIndex, [index, state]) => {
     if (state.getScore(true) > (playerStates.get(maxIndex)?.getScore(true) ?? 0)) {
       return index;
@@ -98,7 +95,6 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]): void => {
 
   if (numberOfReadyPlayers === 4) {
     buzzState.forEach((_state, index) => {
-      const player = getPlayerState(index);
       getPlayerState(index).setIsReady(false);
     });
     window.location.reload();
