@@ -225,7 +225,7 @@ export const render = (
     // ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
     // Call this when something gets everyone's attention:
     if (turnHeadsStartTime) {
-        turnHeads(canvas, ctx);
+        fullTurn(canvas, ctx);
         if (Date.now() >= turnHeadsEndTime) {
             turnHeadsStartTime = 0;
             turnHeadsEndTime = 0;
@@ -233,8 +233,26 @@ export const render = (
     }
 };
 
-function turnHeads(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+function partialTurn(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    let srcY = secondRowHeight;
+    let height = secondRowHeight;
+    ctx.globalAlpha = 0.4;
+    let x = 0, y = 130;
+    ctx.globalAlpha = 1;
+    ctx.drawImage(
+    /* source image */ headsImg,
+    /* top x-coord subrectangle */ 0,
+    /* top y-coord subrectangle */ srcY,
+    /* width of subrectangle */ headsWidth,
+    /* height of subrectangle */ height,
+    /* x axis placement */ Math.floor(x),
+    /* y axis placement */ Math.floor(y),
+    /* width of image to draw */ canvas.width,
+    /* height of image to draw */ height
+    );
+}
 
+function fullTurn(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     const duration = Date.now() - turnHeadsStartTime;
     let srcY = secondRowHeight;
     let height = secondRowHeight;
