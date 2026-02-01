@@ -1,0 +1,20 @@
+
+let movie!: HTMLVideoElement
+
+export const setupMovie = () => {
+    movie = document.getElementById("video") as HTMLVideoElement;
+    movie.src = '/uh2.mp4'
+}
+
+export const playMovie = () => {
+    movie.currentTime = 0;
+    movie.volume = 1;
+    movie.play()
+}
+
+// Movie duration in seconds
+export const getMovieDuration = () => {
+    return movie.duration * 1000;
+}
+
+export const getMovieElement = (): HTMLVideoElement => movie;
