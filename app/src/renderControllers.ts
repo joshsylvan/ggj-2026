@@ -65,15 +65,25 @@ export const drawControllerWithEmojis = (
   buttonEmojis: ButtonEmojis,
   ctx: CanvasRenderingContext2D,
   alpha: number = 1.0,
+  score: number = 0,
+  displayScore: boolean = false
 ) => {
   // Draw assigned count above controller
   ctx.save();
-  ctx.font = 'bold 18px Minecraft';
-  ctx.fillStyle = assignedCount < maxCount ? '#ffffff' : 'red';
   ctx.textAlign = 'center';
+
   if (assignedCount === maxCount) {
+    ctx.font = 'bold 18px Minecraft';
+    ctx.fillStyle = 'red';
     ctx.fillText('READY', x + controllerImageSrcWidth / 2, y + 10);
   }
+
+  if (displayScore) {
+    ctx.font = 'bold 24px Minecraft';
+    ctx.fillStyle = '#ffae00';
+    ctx.fillText(`${score}`, x + controllerImageSrcWidth / 2, y + 40);
+  }
+
   ctx.restore();
 
   ctx.globalAlpha = alpha;

@@ -1,5 +1,5 @@
 import type { ButtonName } from './state';
-import type { soundEffectMap as sound } from './sound-effects';
+import { soundEffectMap as sound } from './sound-effects';
 
 class playerState {
   constructor(controllerId: number) {
@@ -15,6 +15,7 @@ class playerState {
   protected forceLedOff: boolean = false;
   protected previousBuzzState: boolean = false;
   protected previousButtonStates: Map<ButtonName, boolean> = new Map();
+  protected score: number = 0;
 
   public setIsReady(value: boolean) {
     this._isReady = value;
@@ -105,6 +106,15 @@ class playerState {
 
   setForceLedOff(force: boolean): void {
     this.forceLedOff = force;
+  }
+
+  getScore(): number {
+    return this.score;
+  }
+
+  addSoundEffectToScore(soundEffect: keyof typeof sound, caughtMultiplier: number = 1): void {
+    const points = sound[soundEffect].noise * caughtMultiplier;
+    this.score += points;
   }
 
   public reset(): void {
