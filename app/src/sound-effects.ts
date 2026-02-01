@@ -29,6 +29,7 @@ const SOUNDS: SoundEffect[] = [
   { path: 'sounds/tearingmeapart.mp3', emoji: '💃', name: 'Oh Lisa', noise: 2 },
   { path: 'sounds/lemon-grab.mp3', emoji: '🍋', name: 'Lemon Man', noise: 2 },
   { path: 'sounds/drinking-schlurping.mp3', emoji: '🥤', name: 'I need more soda', noise: 1 },
+  { path: 'sounds/nookie.mp3', emoji: '🍪', name: 'Solid Biscuit', noise: 3 },
 ];
 
 export const soundEffectMap: Record<string, SoundEffect> = SOUNDS.reduce<Record<string, SoundEffect>>((pre, cur) => {
