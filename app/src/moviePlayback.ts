@@ -6,10 +6,11 @@ export const setupMovie = () => {
     movie.src = '/uh2.mp4'
 }
 
-export const playMovie = () => {
+export const playMovie = (onStart: () => void) => {
     movie.currentTime = 0;
     movie.volume = 1;
     movie.play()
+    movie.addEventListener('play', onStart);
 }
 
 // Movie duration in seconds
