@@ -70,7 +70,7 @@ const render = (deltaTime: number, buzzState: BuzzerState[]) => {
       levelOneScene.render(deltaTime, buzzState, canvas, ctx);
       break;
     case GAME_STATE_RESULTS:
-      resultsScene.render(deltaTime, canvas, ctx);
+      resultsScene.render(deltaTime, buzzState, canvas, ctx);
       break;
   }
 };
