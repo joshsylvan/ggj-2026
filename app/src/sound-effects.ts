@@ -2,26 +2,33 @@ export type SoundEffect = {
   path: string;
   emoji: string;
   name: string;
+  noise: number;
   audio?: HTMLAudioElement;
 };
 
 
 const SOUNDS: SoundEffect[] = [
-  { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Discrete Horn' },
-  { path: 'sounds/hub_baseline.mp3', emoji: '🟧', name: 'Funky baseline' },
+  { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Discrete Horn', noise: 3 },
+  { path: 'sounds/hub_baseline.mp3', emoji: '🟧', name: 'Funky baseline', noise: 2 },
   {
     path: 'sounds/notification_sound.mp3',
     emoji: '🔔',
     name: 'Notification sound',
+    noise: 1,
   },
-  { path: 'sounds/wilhelm_scream.mp3', emoji: '😱', name: 'Scream' },
-  { path: 'sounds/metal-pipe-clang.mp3', emoji: '🔨', name: 'A Pipe' },
-  { path: 'sounds/bass-boostedyoda-death-sound.mp3', emoji: '👽', name: 'Yoda with bass' },
-  { path: 'sounds/disgusting.mp3', emoji: '👩‍👦', name: 'Concerned Parent' },
-  { path: 'sounds/windows.mp3', emoji: '💻', name: 'Computer Sounds' },
-  { path: 'sounds/fartmemereloaded.mp3', emoji: '🧑‍⚕️', name: 'Healthy Gut' },
-  { path: 'sounds/some-all-star.mp3', emoji: '🤢', name: 'Some' },
-  { path: 'sounds/sea-shanty-2.mp3', emoji: '🏴‍☠️', name: 'Pirate Music' },
+  { path: 'sounds/wilhelm_scream.mp3', emoji: '😱', name: 'Scream', noise: 2 },
+  { path: 'sounds/metal-pipe-clang.mp3', emoji: '🔨', name: 'A Pipe', noise: 3 },
+  { path: 'sounds/bass-boostedyoda-death-sound.mp3', emoji: '👽', name: 'Yoda with bass', noise: 3 },
+  { path: 'sounds/disgusting.mp3', emoji: '👩‍👦', name: 'Concerned Parent', noise: 2 },
+  { path: 'sounds/windows.mp3', emoji: '💻', name: 'Computer Sounds', noise: 1 },
+  { path: 'sounds/fartmemereloaded.mp3', emoji: '🧑‍⚕️', name: 'Healthy Gut', noise: 2 },
+  { path: 'sounds/some-all-star.mp3', emoji: '🤢', name: 'Some', noise: 2 },
+  { path: 'sounds/sea-shanty-2.mp3', emoji: '🏴‍☠️', name: 'Pirate Music', noise: 2 },
+  { path: 'sounds/shut-up-mom.mp3', emoji: '🤫', name: 'Silence Mother', noise: 3 },
+  { path: 'sounds/not-the-bees.mp3', emoji: '🐝', name: 'Bees', noise: 2 },
+  { path: 'sounds/tearingmeapart.mp3', emoji: '💃', name: 'Oh Lisa', noise: 2 },
+  { path: 'sounds/lemon-grab.mp3', emoji: '🍋', name: 'Lemon Man', noise: 2 },
+  { path: 'sounds/drinking-schlurping.mp3', emoji: '🥤', name: 'I need more soda', noise: 1 },
 ];
 
 export const soundEffectMap: Record<string, SoundEffect> = SOUNDS.reduce<Record<string, SoundEffect>>((pre, cur) => {
