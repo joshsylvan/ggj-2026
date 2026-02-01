@@ -2,7 +2,9 @@ export type SoundEffect = {
   path: string;
   emoji: string;
   name: string;
+  audio?: HTMLAudioElement;
 };
+
 
 const SOUNDS: SoundEffect[] = [
   { path: 'sounds/air_horn.mp3', emoji: '📢', name: 'Discrete Horn' },
@@ -12,15 +14,19 @@ const SOUNDS: SoundEffect[] = [
     emoji: '🔔',
     name: 'Notification sound',
   },
-  { path: 'sounds/chug_with_ahhh.mp3', emoji: '🥤', name: 'Sipping Soda' },
-  { path: 'sounds/violin_screech.mp3', emoji: '🎻', name: 'Violin screech' },
   { path: 'sounds/wilhelm_scream.mp3', emoji: '😱', name: 'Scream' },
   { path: 'sounds/metal-pipe-clang.mp3', emoji: '🔨', name: 'A Pipe' },
-  { path: 'sounds/bass-boostedyoda-death-sound.mp3', emoji: '👽', name: 'Yoda with bass' }
+  { path: 'sounds/bass-boostedyoda-death-sound.mp3', emoji: '👽', name: 'Yoda with bass' },
+  { path: 'sounds/disgusting.mp3', emoji: '👩‍👦', name: 'Concerned Parent' },
+  { path: 'sounds/windows.mp3', emoji: '💻', name: 'Computer Sounds' },
+  { path: 'sounds/fartmemereloaded.mp3', emoji: '🧑‍⚕️', name: 'Healthy Gut' },
+  { path: 'sounds/some-all-star.mp3', emoji: '🤢', name: 'Some' },
+  { path: 'sounds/sea-shanty-2.mp3', emoji: '🏴‍☠️', name: 'Pirate Music' },
 ];
 
 export const soundEffectMap: Record<string, SoundEffect> = SOUNDS.reduce<Record<string, SoundEffect>>((pre, cur) => {
   pre[cur.name] = cur;
+  pre[cur.name].audio = new Audio(cur.path);
   return pre;
 }, {})
 
@@ -48,6 +54,13 @@ export function getPreviousSoundEffect(): SoundEffect | undefined {
 }
 
 export const playSoundEffect = (sound: SoundEffect): void => {
+  // Precache the sounds
+  if (soundEffectMap[sound.name].audio) {
+    soundEffectMap[sound.name].audio?.play();
+    return;
+  }
+  console.log('should not be here');
+  soundEffectMap[sound.name].audio?.play();
   const audio = new Audio(sound.path);
   audio.play().catch((error) => {
     console.error(`Failed to play sound effect "${sound.path}":`, error);
