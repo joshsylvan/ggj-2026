@@ -31,12 +31,11 @@ export const secondRowHeight = 133;
 export const headsWidth = 640;
 export const buttons: ButtonName[] = ['blue', 'orange', 'green', 'yellow'];
 
-let headsElapsed = 0;
-let headsTurned = false;
+// let headsElapsed = 0;
+// let headsTurned = false;
 const playerSoundCooldowns: Map<number, number> = new Map();
 const SOUND_COOLDOWN_MS = 500; // Half second cooldown between sounds
 
-let shouldTurnHeads = false;
 let turnHeadsStartTime = 0;
 
 const canPlayerPlaySound = (playerIndex: number): boolean => {
@@ -96,8 +95,8 @@ const getCurrentEventNoiseLevel = (): number => {
 
 export const init = () => {
     console.log('init')
-    headsElapsed = 0;
-    headsTurned = false;
+    // headsElapsed = 0;
+    // headsTurned = false;
     resetAllLedStates();
     startTime = Date.now();
     eventIndex = 0;
@@ -133,21 +132,19 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
             for (let i = 0; i < buttons.length; ++i) {
                 const buttonName = buttons[i];
                 if (state[buttonName as keyof BuzzerState]) {
-                    playerSoundInput[index].isPlaying = true;
-                    playerSoundInput[index].startTime = Date.now();
-                    // 
                     const soundName = getPlayerState(index).getSoundEffect(buttonName) as string;
                     if (soundName) {
+                        playerSoundInput[index].isPlaying = true;
+                        playerSoundInput[index].startTime = Date.now();
                         playSoundEffectByName(soundName);
                         if (getCurrentEventNoiseLevel() <= 0) {
-                            shouldTurnHeads = true;
                             turnHeadsStartTime = Date.now();
                             caughtAudio.volume = 0.5;
                             caughtAudio.play();
                         }
                         getPlayerState(index).removeSoundEffect(buttonName);
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -158,12 +155,12 @@ export const update = (deltaTime: number, buzzState: BuzzerState[]) => {
         }
     });
 
-    if (!headsTurned) {
-        headsElapsed += deltaTime;
-        if (headsElapsed >= 0.5) {
-            headsTurned = true;
-        }
-    }
+    // if (!headsTurned) {
+    //     headsElapsed += deltaTime;
+    //     if (headsElapsed >= 0.5) {
+    //         headsTurned = true;
+    //     }
+    // }
 };
 
 export const render = (
@@ -182,42 +179,52 @@ export const render = (
         const xPos = xWobble + (90 + index * controllerImageSrcWidth);
         const yPos = yWobble + 200;
 
-        const remaining = getPlayerState(index).getRemainingSlots();
-        // const assigned = 4 - remaining;
         const buttonEmojis: ButtonEmojis = {
             blue: getEmojiForSoundEffect(playerState.getSoundEffect('blue') ?? ''),
             orange: getEmojiForSoundEffect(playerState.getSoundEffect('orange') ?? ''),
             green: getEmojiForSoundEffect(playerState.getSoundEffect('green') ?? ''),
             yellow: getEmojiForSoundEffect(playerState.getSoundEffect('yellow') ?? ''),
         };
-
+        // Hardcoded 4 to remove the ready text
         drawControllerWithEmojis(xPos, yPos, state, 4, 0, buttonEmojis, ctx, 0.5);
     });
     ctx.fillStyle = 'white';
     ctx.font = '24px Minecraft'
     ctx.fillText(`TIME: ${Date.now() - startTime}  | Events ${currentEvents.length}`, 100, 100);
     // Call this when something gets everyone's attention:
-    if (shouldTurnHeads) {
-        turnHeads(0, 130, canvas, ctx);
+    if (turnHeadsStartTime) {
+        turnHeads(canvas, ctx);
         if (Date.now() - turnHeadsStartTime >= 1000) {
-            shouldTurnHeads = false;
+            turnHeadsStartTime = 0;
         }
     }
 };
 
-function turnHeads(x: number, y: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+function turnHeads(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+
+    const duration = Date.now() - turnHeadsStartTime;
+    let srcY = secondRowHeight;
+    let height = secondRowHeight;
     ctx.globalAlpha = 0.4;
-    if (headsTurned) drawSpeedLines(ctx);
+    let x = 0, y = 130;
+
+    if (duration >= 500) {
+        drawSpeedLines(ctx);
+        srcY = 0;
+        height = firstRowHeight;
+        x += Math.random() * 10;
+        y += Math.random() * 10;
+    }
     ctx.globalAlpha = 1;
     ctx.drawImage(
     /* source image */ headsImg,
     /* top x-coord subrectangle */ 0,
-    /* top y-coord subrectangle */ headsTurned ? 0 : firstRowHeight,
+    /* top y-coord subrectangle */ srcY,
     /* width of subrectangle */ headsWidth,
-    /* height of subrectangle */ headsTurned ? secondRowHeight : firstRowHeight,
-    /* x axis placement */ Math.floor(x) + (headsTurned ? Math.random() * 10 : 0),
-    /* y axis placement */ Math.floor(y) + (headsTurned ? Math.random() * 10 : 0),
+    /* height of subrectangle */ height,
+    /* x axis placement */ Math.floor(x),
+    /* y axis placement */ Math.floor(y),
     /* width of image to draw */ canvas.width,
-    /* height of image to draw */ headsTurned ? secondRowHeight : firstRowHeight
+    /* height of image to draw */ height
     );
 }
