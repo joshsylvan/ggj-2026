@@ -38,7 +38,7 @@ video {
   position: absolute;
   aspect-ratio: calc(16 / 9);
   z-index: -1;
-  transform: translate(2%, -19%);
+  transform: translate(4%, -26%);
 }
 
 h1 {

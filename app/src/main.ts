@@ -45,12 +45,12 @@ const resizeCanvas = () => {
     canvas.style.width = 'auto';
     canvas.style.height = '100%';
     video.style.width = 'auto';
-    video.style.height = '50%';
+    video.style.height = '60%';
   } else {
     // Container is taller - fit to width
     canvas.style.width = '100%';
     canvas.style.height = 'auto';
-    video.style.width = '50%';
+    video.style.width = '60%';
     video.style.height = 'auto';
   }
 };
